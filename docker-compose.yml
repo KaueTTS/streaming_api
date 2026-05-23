@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    container_name: streaming-api
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      APP_ENV: "development"
+      APP_NAME: "streaming_api"
+      SQLITE_DATABASE_URL: "/app/data/streaming_api.db"
+      JWT_SECRET: "development-secret"
+      AUTH_TOKEN_EXPIRATION_TIME_IN_HOURS: "8"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
