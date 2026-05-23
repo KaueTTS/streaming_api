@@ -1,0 +1,13 @@
+.git/
+.github/
+.vscode/
+.gitignore
+data/
+*.db
+*.log
+kubernetes/
+DOCKER.md
+README.md
+GIT.md
+__debug_bin.exe
+coverage.out

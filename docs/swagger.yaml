@@ -1,0 +1,189 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  dto_auth.AuthResponseDto:
+    properties:
+      expires_in:
+        type: integer
+      token:
+        type: string
+      token_type:
+        type: string
+      user:
+        $ref: '#/definitions/dto_auth.UserResponseDto'
+    type: object
+  dto_auth.LoginRequestDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto_auth.RegisterRequestDto:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  dto_auth.UserResponseDto:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto_shared.DetailErrorDto:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+      value:
+        type: string
+    type: object
+  dto_shared.ErrorDto:
+    properties:
+      codeMessage:
+        type: string
+      details:
+        items:
+          $ref: '#/definitions/dto_shared.DetailErrorDto'
+        type: array
+      message:
+        type: string
+    type: object
+  route_health.Health:
+    properties:
+      status:
+        type: string
+    type: object
+info:
+  contact:
+    name: KauêTTS
+    url: https://github.com/KaueTTS
+  description: API
+  title: Streaming API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      description: Retorna o status de funcionamento da API
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/route_health.Health'
+      summary: Verifica se a API está online
+      tags:
+      - Health
+  /v1/auth/login:
+    post:
+      description: Autentica um usuário com e-mail e senha e retorna o token de acesso
+      parameters:
+      - description: Dados para autenticação
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto_auth.LoginRequestDto'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_auth.AuthResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      summary: Realiza login do usuário
+      tags:
+      - authorization
+  /v1/auth/me:
+    get:
+      description: Retorna os dados do usuário autenticado com base no token enviado
+        no header Authorization
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_auth.UserResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Busca o usuário autenticado
+      tags:
+      - authorization
+  /v1/auth/register:
+    post:
+      description: Cria uma nova conta de usuário no sistema
+      parameters:
+      - description: Dados para registrar o usuário
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto_auth.RegisterRequestDto'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto_auth.UserResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      summary: Registra um novo usuário
+      tags:
+      - authorization
+produces:
+- application/json
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

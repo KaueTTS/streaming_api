@@ -1,0 +1,7 @@
+.env
+*.db
+ideia.txt
+stack.txt
+__debug_bin.exe
+data/
+coverage.out

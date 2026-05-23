@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master", "qa" ]
+  pull_request:
+    branches: [ "master", "qa" ]
+
+jobs:
+  backend-ci:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup do Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Cache de dependências Go
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('server/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Baixar dependências
+        run: go mod download
+
+      - name: Verificar formatação
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Código não formatado corretamente"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Rodar testes com coverage
+        run: |
+          PACKAGES=$(go list ./... | grep -v '/utils' | grep -v '/mocks' | grep -v '/models' | grep -v '/dto')
+
+          go test $PACKAGES -v -coverprofile=coverage.out
+
+      - name: Validar coverage mínimo
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Coverage total: ${COVERAGE}%"
+
+          MIN_COVERAGE=50
+
+          awk -v coverage="$COVERAGE" -v min="$MIN_COVERAGE" 'BEGIN {
+            if (coverage < min) {
+              printf "Coverage abaixo do mínimo permitido: %.2f%%\n", min
+              exit 1
+            }
+
+            printf "Coverage aprovado. Mínimo exigido: %.2f%%\n", min
+          }'
+
+      - name: Build da aplicação
+        run: go build -o finance-api .
