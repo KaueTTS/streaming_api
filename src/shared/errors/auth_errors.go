@@ -1,14 +1,8 @@
 package shared_errors
 
 const (
-	InvalidRequestBody = "corpo da requisição inválido"
-
 	InvalidRegisterData = "dados de cadastro inválidos"
 	InvalidLoginData    = "dados de login inválidos"
-
-	EmailAlreadyInUse  = "e-mail já está em uso"
-	InvalidCredentials = "e-mail ou senha inválidos"
-	InvalidPassword    = "senha inválida"
 
 	FailedToRegisterUser = "erro ao cadastrar usuário"
 	FailedToLogin        = "erro ao realizar login"
@@ -34,9 +28,12 @@ const (
 	PasswordMustLeast8Character   = "senha deve ter pelo menos 8 caracteres"
 	PasswordMustMaximum72Bytes    = "senha deve ter no máximo 72 bytes"
 	PasswordMustLettersAndNumbers = "senha deve conter letras e números"
+	InvalidPassword               = "senha inválida"
 )
 
 const (
-	EmailRequired = "e-mail é obrigatório"
-	EmailInvalid  = "e-mail inválido"
+	EmailRequired      = "e-mail é obrigatório"
+	EmailInvalid       = "e-mail inválido"
+	EmailAlreadyInUse  = "e-mail já está em uso"
+	InvalidCredentials = "e-mail ou senha inválidos"
 )

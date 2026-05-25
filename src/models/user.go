@@ -11,6 +11,7 @@ type User struct {
 	Name         string         `json:"name" gorm:"not null"`
 	Email        string         `json:"email" gorm:"uniqueIndex;not null"`
 	PasswordHash string         `json:"-" gorm:"not null"`
+	Role         string         `json:"role" gorm:"not null;default:user"`
 	Profiles     []Profile      `json:"profiles,omitempty" gorm:"foreignKey:UserID"`
 	CreatedAt    time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt    time.Time      `json:"updated_at" gorm:"autoUpdateTime"`

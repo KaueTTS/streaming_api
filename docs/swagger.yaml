@@ -39,8 +39,27 @@ definitions:
         type: integer
       name:
         type: string
+      role:
+        type: string
       updated_at:
         type: string
+    type: object
+  dto_profile.ProfileResponseDto:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_kids:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
     type: object
   dto_shared.DetailErrorDto:
     properties:
@@ -85,7 +104,7 @@ paths:
             $ref: '#/definitions/route_health.Health'
       summary: Verifica se a API está online
       tags:
-      - Health
+      - health
   /v1/auth/login:
     post:
       description: Autentica um usuário com e-mail e senha e retorna o token de acesso
@@ -176,6 +195,33 @@ paths:
       summary: Registra um novo usuário
       tags:
       - authorization
+  /v1/profiles:
+    get:
+      description: Teste
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto_profile.ProfileResponseDto'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Teste
+      tags:
+      - profiles
 produces:
 - application/json
 schemes:

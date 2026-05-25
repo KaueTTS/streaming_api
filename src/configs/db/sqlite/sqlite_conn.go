@@ -28,8 +28,6 @@ func Init() (*gorm.DB, error) {
 		&models.Content{},
 		&models.Favorite{},
 		&models.WatchProgress{},
-		&models.Season{},
-		&models.Episode{},
 	); err != nil {
 		return nil, fmt.Errorf("erro ao migrar banco de dados: %w", err)
 	}

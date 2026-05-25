@@ -6,3 +6,22 @@
 
 > [!IMPORTANT]
 > *Esse projeto está em andamento.*
+
+### Tópicos
+
+## Descrição do projeto
+
+### Funcionalidades Principais
+
+## Tecnologias
+
+## Arquitetura
+
+## Projeto em funcionamento
+
+## Como utilizar o projeto
+
+## Colaboradores
+
+| [<img src="https://avatars.githubusercontent.com/u/69527468?v=4" width=115><br><sub>Kauê Bertaze de Oliveira</sub>](https://github.com/KaueTTS)<br><sub>Developer Full Stack</sub> |
+| :---:

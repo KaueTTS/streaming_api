@@ -1,34 +1,22 @@
 package security
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
-	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
-	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Claims struct {
 	UserID uint   `json:"sub"`
 	Email  string `json:"email"`
-	Exp    int64  `json:"exp"` // expires at
-	Iat    int64  `json:"iat"` // issued at
-	Iss    string `json:"iss"` // issuer
+	Role   string `json:"role"`
+	jwt.RegisteredClaims
 }
 
-type tokenHeader struct {
-	Alg string `json:"alg"`
-	Typ string `json:"typ"`
-}
-
-func GenerateToken(userID uint, email string) (string, error) {
+func GenerateToken(userID uint, email string, role string) (string, error) {
 	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
 		return "", errors.New("JWT_SECRET não informado")
@@ -37,101 +25,50 @@ func GenerateToken(userID uint, email string) (string, error) {
 	now := time.Now()
 	expiresAt := now.Add(GetExpirationDuration())
 
-	header := tokenHeader{
-		Alg: shared_constants.JWTAlgorithm,
-		Typ: shared_constants.JWTType,
-	}
-
 	claims := Claims{
 		UserID: userID,
 		Email:  email,
-		Iat:    now.Unix(),
-		Exp:    expiresAt.Unix(),
-		Iss:    env.AppName,
+		Role:   role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    env.AppName,
+			IssuedAt:  jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
+		},
 	}
 
-	headerEncoded, err := encodeJSON(header)
-	if err != nil {
-		return "", err
-	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	payloadEncoded, err := encodeJSON(claims)
-	if err != nil {
-		return "", err
-	}
-
-	unsignedToken := headerEncoded + "." + payloadEncoded
-	signature := sign(unsignedToken, secret)
-
-	return unsignedToken + "." + signature, nil
+	return token.SignedString([]byte(secret))
 }
 
-func ValidateToken(token string) (*Claims, error) {
+func ValidateToken(tokenString string) (*Claims, error) {
 	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
 		return nil, errors.New("JWT_SECRET não informado")
 	}
 
-	parts := strings.Split(strings.TrimSpace(token), ".")
-	if len(parts) != 3 {
-		return nil, errors.New(shared_errors.InvalidToken)
-	}
-
-	for _, part := range parts {
-		if strings.TrimSpace(part) == "" {
-			return nil, errors.New(shared_errors.InvalidToken)
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
+		if token.Method != jwt.SigningMethodHS256 {
+			return nil, errors.New("algoritmo do token inválido")
 		}
-	}
 
-	headerPayload, err := base64.RawURLEncoding.DecodeString(parts[0])
+		return []byte(secret), nil
+	})
+
 	if err != nil {
-		return nil, errors.New("header do token inválido")
+		return nil, err
 	}
 
-	var header tokenHeader
-	if err := json.Unmarshal(headerPayload, &header); err != nil {
-		return nil, errors.New("header do token inválido")
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, errors.New("token inválido")
 	}
 
-	if header.Alg != shared_constants.JWTAlgorithm || !strings.EqualFold(header.Typ, shared_constants.JWTType) {
-		return nil, errors.New("algoritmo do token inválido")
-	}
-
-	unsignedToken := parts[0] + "." + parts[1]
-	expectedSignature := sign(unsignedToken, secret)
-
-	if !hmac.Equal([]byte(expectedSignature), []byte(parts[2])) {
-		return nil, errors.New("assinatura do token inválida")
-	}
-
-	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
-	if err != nil {
-		return nil, errors.New("payload do token inválido")
-	}
-
-	var claims Claims
-	if err := json.Unmarshal(payload, &claims); err != nil {
+	if claims.UserID == 0 || strings.TrimSpace(claims.Email) == "" {
 		return nil, errors.New("claims do token inválidas")
 	}
 
-	now := time.Now().Unix()
-	if claims.Iat <= 0 || claims.Exp <= 0 || claims.Exp <= claims.Iat {
-		return nil, errors.New("claims do token inválidas")
-	}
-
-	if claims.Exp <= now {
-		return nil, errors.New("token expirado")
-	}
-
-	if claims.Iat > now+60 {
-		return nil, errors.New("token emitido em data inválida")
-	}
-
-	if claims.Iss != env.AppName || claims.UserID == 0 || strings.TrimSpace(claims.Email) == "" {
-		return nil, errors.New("claims do token inválidas")
-	}
-
-	return &claims, nil
+	return claims, nil
 }
 
 func ExtractBearerToken(authorizationHeader string) (string, error) {
@@ -151,22 +88,6 @@ func ExtractBearerToken(authorizationHeader string) (string, error) {
 	}
 
 	return token, nil
-}
-
-func encodeJSON(value any) (string, error) {
-	jsonBytes, err := json.Marshal(value)
-	if err != nil {
-		return "", fmt.Errorf("erro ao gerar json do token: %w", err)
-	}
-
-	return base64.RawURLEncoding.EncodeToString(jsonBytes), nil
-}
-
-func sign(value string, secret string) string {
-	hash := hmac.New(sha256.New, []byte(secret))
-	hash.Write([]byte(value))
-
-	return base64.RawURLEncoding.EncodeToString(hash.Sum(nil))
 }
 
 func GetExpirationDuration() time.Duration {

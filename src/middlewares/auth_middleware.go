@@ -21,6 +21,18 @@ func AuthRequired() fiber.Handler {
 
 		ctx.Locals("user_id", claims.UserID)
 		ctx.Locals("user_email", claims.Email)
+		ctx.Locals("user_role", claims.Role)
+
+		return ctx.Next()
+	}
+}
+
+func AdminRequired() fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		role, ok := ctx.Locals("user_role").(string)
+		if !ok || role != "admin" {
+			return responses.Forbidden(ctx, shared_errors.AccessAdminOnly)
+		}
 
 		return ctx.Next()
 	}

@@ -25,7 +25,7 @@
             "get": {
                 "description": "Retorna o status de funcionamento da API",
                 "tags": [
-                    "Health"
+                    "health"
                 ],
                 "summary": "Verifica se a API está online",
                 "responses": {
@@ -175,6 +175,49 @@
                     }
                 }
             }
+        },
+        "/v1/profiles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Teste",
+                "tags": [
+                    "profiles"
+                ],
+                "summary": "Teste",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto_profile.ProfileResponseDto"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -235,8 +278,37 @@
                 "name": {
                     "type": "string"
                 },
+                "role": {
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "dto_profile.ProfileResponseDto": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_kids": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

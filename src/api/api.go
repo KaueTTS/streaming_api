@@ -5,6 +5,7 @@ import (
 
 	route_auth "github.com/KaueTTS/streaming_api/src/api/routes/auth"
 	route_health "github.com/KaueTTS/streaming_api/src/api/routes/health"
+	route_profile "github.com/KaueTTS/streaming_api/src/api/routes/profile"
 	route_swagger "github.com/KaueTTS/streaming_api/src/api/routes/swagger"
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
 	"github.com/gofiber/fiber/v2"
@@ -42,4 +43,5 @@ func injectRoutes(app *fiber.App, db *gorm.DB) {
 	route_swagger.Init(app)
 
 	route_auth.Init(app, db)
+	route_profile.Init(app, db)
 }

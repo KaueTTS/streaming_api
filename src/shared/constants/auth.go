@@ -3,6 +3,11 @@ package shared_constants
 import "time"
 
 const (
+	RoleUser  = "user"
+	RoleAdmin = "admin"
+)
+
+const (
 	AuthRateLimitMax        = 10
 	AuthRateLimitExpiration = time.Minute
 

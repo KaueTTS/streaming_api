@@ -3,7 +3,7 @@ package repository_interface
 import (
 	"context"
 
-	"github.com/KaueTTS/streaming_api/src/models"
+	models "github.com/KaueTTS/streaming_api/src/models"
 )
 
 type AuthRepositoryInterface interface {
