@@ -1,4 +1,4 @@
-package shared_errors
+package shared_errors_auth
 
 const (
 	InvalidRegisterData = "dados de cadastro inválidos"

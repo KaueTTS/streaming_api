@@ -17,22 +17,43 @@ func NewProfileRepository(db *gorm.DB) *ProfileRepository {
 	}
 }
 
-func (repository *ProfileRepository) FindAll(ctx context.Context) ([]models.Profile, error) {
+func (r *ProfileRepository) FindAll(ctx context.Context) ([]models.Profile, error) {
 	var profiles []models.Profile
 
-	if err := repository.db.WithContext(ctx).Order("name asc").Find(&profiles).Error; err != nil {
+	if err := r.db.WithContext(ctx).Order("name asc").Find(&profiles).Error; err != nil {
 		return nil, err
 	}
 
 	return profiles, nil
 }
 
-func (repository *ProfileRepository) FindByUserID(ctx context.Context, userID uint) ([]models.Profile, error) {
+func (r *ProfileRepository) FindByUserID(ctx context.Context, userID uint, page int, perPage int) ([]models.Profile, int64, error) {
 	var profiles []models.Profile
+	var total int64
 
-	if err := repository.db.WithContext(ctx).Where("user_id = ?", userID).Order("name asc").Find(&profiles).Error; err != nil {
-		return nil, err
+	query := r.db.WithContext(ctx).Model(&models.Profile{}).Where("user_id = ?", userID)
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
 
-	return profiles, nil
+	offset := (page - 1) * perPage
+
+	if err := query.
+		Order("name asc").
+		Limit(perPage).
+		Offset(offset).
+		Find(&profiles).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return profiles, total, nil
+}
+
+func (r *ProfileRepository) Create(ctx context.Context, profile *models.Profile) error {
+	if err := r.db.WithContext(ctx).Create(profile).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

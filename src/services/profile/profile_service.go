@@ -4,9 +4,9 @@ import (
 	"context"
 
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
+	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	models "github.com/KaueTTS/streaming_api/src/models"
 	repository_interface "github.com/KaueTTS/streaming_api/src/repositories/interfaces"
-	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
 )
 
 type ProfileService struct {
@@ -19,24 +19,20 @@ func NewProfileService(profileRepositoryInterface repository_interface.ProfileRe
 	}
 }
 
-func (s *ProfileService) GetProfiles(ctx context.Context, userID uint, role string) ([]dto_profile.ProfileResponseDto, error) {
+func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page int, perPage int) (dto_profile.ProfileResponseDto, error) {
 	var profiles []models.Profile
+	var total int64
 	var err error
 
-	if role == shared_constants.RoleAdmin {
-		profiles, err = s.ProfileRepositoryInterface.FindAll(ctx)
-	} else {
-		profiles, err = s.ProfileRepositoryInterface.FindByUserID(ctx, userID)
-	}
+	profiles, total, err = s.ProfileRepositoryInterface.FindByUserID(ctx, userID, page, perPage)
 
 	if err != nil {
-		return nil, err
+		return dto_profile.ProfileResponseDto{}, err
 	}
 
-	response := make([]dto_profile.ProfileResponseDto, 0, len(profiles))
-
+	data := make([]dto_profile.ProfileDto, 0, len(profiles))
 	for _, profile := range profiles {
-		response = append(response, dto_profile.ProfileResponseDto{
+		data = append(data, dto_profile.ProfileDto{
 			ID:        profile.ID,
 			UserID:    profile.UserID,
 			Name:      profile.Name,
@@ -47,5 +43,38 @@ func (s *ProfileService) GetProfiles(ctx context.Context, userID uint, role stri
 		})
 	}
 
-	return response, nil
+	pageCount := int((total + int64(perPage) - 1) / int64(perPage))
+
+	return dto_profile.ProfileResponseDto{
+		Data: data,
+		Pagination: dto_shared.PaginationDto{
+			Page:      page,
+			PerPage:   perPage,
+			PageCount: pageCount,
+			Total:     total,
+		},
+	}, nil
+}
+
+func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request dto_profile.CreateProfileRequestDto) (dto_profile.ProfileDto, error) {
+	profile := models.Profile{
+		UserID:    userID,
+		Name:      request.Name,
+		AvatarURL: request.AvatarURL,
+		IsKids:    request.IsKids,
+	}
+
+	if err := s.ProfileRepositoryInterface.Create(ctx, &profile); err != nil {
+		return dto_profile.ProfileDto{}, err
+	}
+
+	return dto_profile.ProfileDto{
+		ID:        profile.ID,
+		UserID:    profile.UserID,
+		Name:      profile.Name,
+		AvatarURL: profile.AvatarURL,
+		IsKids:    profile.IsKids,
+		CreatedAt: profile.CreatedAt,
+		UpdatedAt: profile.UpdatedAt,
+	}, nil
 }

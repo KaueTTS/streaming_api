@@ -44,7 +44,16 @@ definitions:
       updated_at:
         type: string
     type: object
-  dto_profile.ProfileResponseDto:
+  dto_profile.CreateProfileRequestDto:
+    properties:
+      avatar_url:
+        type: string
+      is_kids:
+        type: boolean
+      name:
+        type: string
+    type: object
+  dto_profile.ProfileDto:
     properties:
       avatar_url:
         type: string
@@ -60,6 +69,15 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  dto_profile.ProfileResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto_profile.ProfileDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto_shared.PaginationDto'
     type: object
   dto_shared.DetailErrorDto:
     properties:
@@ -80,6 +98,17 @@ definitions:
         type: array
       message:
         type: string
+    type: object
+  dto_shared.PaginationDto:
+    properties:
+      page:
+        type: integer
+      pageCount:
+        type: integer
+      perPage:
+        type: integer
+      total:
+        type: integer
     type: object
   route_health.Health:
     properties:
@@ -197,14 +226,11 @@ paths:
       - authorization
   /v1/profiles:
     get:
-      description: Teste
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/dto_profile.ProfileResponseDto'
-            type: array
+            $ref: '#/definitions/dto_profile.ProfileResponseDto'
         "400":
           description: Bad Request
           schema:
@@ -219,7 +245,37 @@ paths:
             $ref: '#/definitions/dto_shared.ErrorDto'
       security:
       - BearerAuth: []
-      summary: Teste
+      summary: Listar os perfis do usuário logado
+      tags:
+      - profiles
+    post:
+      parameters:
+      - description: Dados para criar um perfil
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto_profile.CreateProfileRequestDto'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto_profile.ProfileDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Criar um novo perfil para o usuário logado
       tags:
       - profiles
 produces:

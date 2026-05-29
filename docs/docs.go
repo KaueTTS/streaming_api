@@ -186,19 +186,63 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Teste",
                 "tags": [
                     "profiles"
                 ],
-                "summary": "Teste",
+                "summary": "Listar os perfis do usuário logado",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto_profile.ProfileResponseDto"
-                            }
+                            "$ref": "#/definitions/dto_profile.ProfileResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "profiles"
+                ],
+                "summary": "Criar um novo perfil para o usuário logado",
+                "parameters": [
+                    {
+                        "description": "Dados para criar um perfil",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto_profile.CreateProfileRequestDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto_profile.ProfileDto"
                         }
                     },
                     "400": {
@@ -289,7 +333,21 @@ const docTemplate = `{
                 }
             }
         },
-        "dto_profile.ProfileResponseDto": {
+        "dto_profile.CreateProfileRequestDto": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "is_kids": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto_profile.ProfileDto": {
             "type": "object",
             "properties": {
                 "avatar_url": {
@@ -312,6 +370,20 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto_profile.ProfileResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto_profile.ProfileDto"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/dto_shared.PaginationDto"
                 }
             }
         },
@@ -343,6 +415,23 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "dto_shared.PaginationDto": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageCount": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

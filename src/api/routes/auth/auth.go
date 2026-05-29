@@ -7,7 +7,7 @@ import (
 	repository_sqlite_user "github.com/KaueTTS/streaming_api/src/repositories/sqlite/user"
 	service_auth "github.com/KaueTTS/streaming_api/src/services/auth"
 	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
-	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"gorm.io/gorm"
@@ -25,7 +25,7 @@ func Init(app *fiber.App, db *gorm.DB) {
 			return ctx.IP()
 		},
 		LimitReached: func(ctx *fiber.Ctx) error {
-			return responses.TooManyRequests(ctx, shared_errors.TooManyAuthAttempts)
+			return responses.TooManyRequests(ctx, shared_errors_auth.TooManyAuthAttempts)
 		},
 	})
 

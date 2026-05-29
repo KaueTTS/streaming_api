@@ -8,5 +8,6 @@ import (
 
 type ProfileRepositoryInterface interface {
 	FindAll(ctx context.Context) ([]models.Profile, error)
-	FindByUserID(ctx context.Context, userID uint) ([]models.Profile, error)
+	FindByUserID(ctx context.Context, userID uint, page int, perPage int) ([]models.Profile, int64, error)
+	Create(ctx context.Context, profile *models.Profile) error
 }

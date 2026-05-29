@@ -15,8 +15,8 @@ func Init(app *fiber.App, db *gorm.DB) {
 	profileController := v1_controller_profile.NewProfileController(profileService)
 
 	privateGroup := app.Group("/v1", auth_middleware.AuthRequired())
-	privateGroup.Get("/profiles", profileController.Profiles)
-	// privateGroup.Post("/profiles")
-	// privateGroup.Put("/profiles/:id")
-	// privateGroup.Delete("/profiles/:id")
+	privateGroup.Get("/profiles", profileController.ListProfiles)
+	privateGroup.Post("/profiles", profileController.CreateProfile)
+	privateGroup.Put("/profiles/:id", profileController.UpdateProfile)
+	privateGroup.Delete("/profiles/:id", profileController.DeleteProfile)
 }

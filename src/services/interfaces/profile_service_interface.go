@@ -7,5 +7,6 @@ import (
 )
 
 type ProfileServiceInterface interface {
-	GetProfiles(ctx context.Context, userID uint, role string) ([]dto_profile.ProfileResponseDto, error)
+	ListProfiles(ctx context.Context, userID uint, page int, perPage int) (dto_profile.ProfileResponseDto, error)
+	CreateProfile(ctx context.Context, userID uint, request dto_profile.CreateProfileRequestDto) (dto_profile.ProfileDto, error)
 }

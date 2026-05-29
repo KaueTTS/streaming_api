@@ -9,7 +9,7 @@ import (
 	dto_auth "github.com/KaueTTS/streaming_api/src/api/v1/dto/auth"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
-	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 )
 
 func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.DetailErrorDto {
@@ -19,17 +19,17 @@ func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.D
 	if name == "" {
 		details = append(
 			details,
-			NewDetail(shared_constants.Name, request.Name, shared_errors.NameRequired),
+			NewDetail(shared_constants.Name, name, shared_errors_auth.NameRequired),
 		)
 	} else if utf8.RuneCountInString(name) < shared_constants.MinNameLength {
 		details = append(
 			details,
-			NewDetail(shared_constants.Name, request.Name, shared_errors.NameMustLeast2Character),
+			NewDetail(shared_constants.Name, name, shared_errors_auth.NameMustLeast2Character),
 		)
 	} else if utf8.RuneCountInString(name) > shared_constants.MaxNameLength {
 		details = append(
 			details,
-			NewDetail(shared_constants.Name, request.Name, shared_errors.NameMustMaximum120Character),
+			NewDetail(shared_constants.Name, name, shared_errors_auth.NameMustMaximum120Character),
 		)
 	}
 
@@ -39,22 +39,22 @@ func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.D
 	if strings.TrimSpace(password) == "" {
 		details = append(
 			details,
-			NewDetail(shared_constants.Password, "", shared_errors.PasswordRequired),
+			NewDetail(shared_constants.Password, "", shared_errors_auth.PasswordRequired),
 		)
 	} else if utf8.RuneCountInString(password) < shared_constants.MinPasswordLength {
 		details = append(
 			details,
-			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors.PasswordMustLeast8Character),
+			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordMustLeast8Character),
 		)
 	} else if len([]byte(password)) > shared_constants.MaxPasswordBytes {
 		details = append(
 			details,
-			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors.PasswordMustMaximum72Bytes),
+			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordMustMaximum72Bytes),
 		)
 	} else if !hasLetterAndNumber(password) {
 		details = append(
 			details,
-			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors.PasswordMustLettersAndNumbers),
+			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordMustLettersAndNumbers),
 		)
 	}
 
@@ -69,7 +69,7 @@ func ValidateLoginRequest(request dto_auth.LoginRequestDto) []dto_shared.DetailE
 	if strings.TrimSpace(request.Password) == "" {
 		details = append(
 			details,
-			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors.PasswordRequired),
+			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordRequired),
 		)
 	}
 
@@ -79,12 +79,12 @@ func ValidateLoginRequest(request dto_auth.LoginRequestDto) []dto_shared.DetailE
 func validateEmail(email string) []dto_shared.DetailErrorDto {
 	trimmedEmail := strings.TrimSpace(email)
 	if trimmedEmail == "" {
-		return []dto_shared.DetailErrorDto{NewDetail(shared_constants.Email, email, shared_errors.EmailRequired)}
+		return []dto_shared.DetailErrorDto{NewDetail(shared_constants.Email, email, shared_errors_auth.EmailRequired)}
 	}
 
 	parsedEmail, err := mail.ParseAddress(trimmedEmail)
 	if err != nil || parsedEmail.Address != trimmedEmail {
-		return []dto_shared.DetailErrorDto{NewDetail(shared_constants.Email, email, shared_errors.EmailInvalid)}
+		return []dto_shared.DetailErrorDto{NewDetail(shared_constants.Email, email, shared_errors_auth.EmailInvalid)}
 	}
 
 	return nil
