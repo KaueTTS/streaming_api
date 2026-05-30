@@ -33,7 +33,7 @@ func Init(db *gorm.DB) error {
 	app.Use(helmet.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
-		AllowMethods: "OPTIONS,GET,PUT,DELETE,POST",
+		AllowMethods: "OPTIONS,GET,PUT,DELETE,POST,PATCH",
 		AllowHeaders: "Authorization,Content-Type",
 	}))
 

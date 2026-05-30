@@ -12,10 +12,12 @@ var (
 	Port                           string
 	AppEnv                         string
 	AppName                        string
+	OTLPExporterEndpoint           string
+	JWTSecret                      string
 	SQLiteDatabaseURL              string
 	AuthTokenExpirationTimeInHours float64
-	JWTSecret                      string
-	OTLPExporterEndpoint           string
+	TMDBBaseURL                    string
+	TMDBAccessToken                string
 )
 
 func Init() error {
@@ -41,14 +43,14 @@ func Init() error {
 		OTLPExporterEndpoint = "localhost:4318"
 	}
 
-	SQLiteDatabaseURL = os.Getenv("SQLITE_DATABASE_URL")
-	if SQLiteDatabaseURL == "" {
-		return fmt.Errorf("a variável de ambiente SQLITE_DATABASE_URL precisa ser informada")
-	}
-
 	JWTSecret = os.Getenv("JWT_SECRET")
 	if JWTSecret == "" {
 		return fmt.Errorf("a variável de ambiente JWT_SECRET precisa ser informada")
+	}
+
+	SQLiteDatabaseURL = os.Getenv("SQLITE_DATABASE_URL")
+	if SQLiteDatabaseURL == "" {
+		return fmt.Errorf("a variável de ambiente SQLITE_DATABASE_URL precisa ser informada")
 	}
 
 	AuthTokenExpirationTimeInHours = 8
@@ -59,6 +61,16 @@ func Init() error {
 		}
 
 		AuthTokenExpirationTimeInHours = parsedValue
+	}
+
+	TMDBBaseURL = os.Getenv("TMDB_BASE_URL")
+	if TMDBBaseURL == "" {
+		return fmt.Errorf("a variável de ambiente TMDB_BASE_URL precisa ser informada")
+	}
+
+	TMDBAccessToken = os.Getenv("TMDB_ACCESS_TOKEN")
+	if TMDBAccessToken == "" {
+		return fmt.Errorf("a variável de ambiente TMDB_ACCESS_TOKEN precisa ser informada")
 	}
 
 	return nil
