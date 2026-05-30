@@ -9,6 +9,7 @@ import (
 	dto_auth "github.com/KaueTTS/streaming_api/src/api/v1/dto/auth"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
+	shared_constants_auth "github.com/KaueTTS/streaming_api/src/shared/constants/auth"
 	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 )
 
@@ -41,12 +42,12 @@ func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.D
 			details,
 			NewDetail(shared_constants.Password, "", shared_errors_auth.PasswordRequired),
 		)
-	} else if utf8.RuneCountInString(password) < shared_constants.MinPasswordLength {
+	} else if utf8.RuneCountInString(password) < shared_constants_auth.MinPasswordLength {
 		details = append(
 			details,
 			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordMustLeast8Character),
 		)
-	} else if len([]byte(password)) > shared_constants.MaxPasswordBytes {
+	} else if len([]byte(password)) > shared_constants_auth.MaxPasswordBytes {
 		details = append(
 			details,
 			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordMustMaximum72Bytes),

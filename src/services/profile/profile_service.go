@@ -2,11 +2,14 @@ package service_profile
 
 import (
 	"context"
+	"strings"
 
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	models "github.com/KaueTTS/streaming_api/src/models"
 	repository_interface "github.com/KaueTTS/streaming_api/src/repositories/interfaces"
+	shared_constants_profile "github.com/KaueTTS/streaming_api/src/shared/constants/profile"
+	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 )
 
 type ProfileService struct {
@@ -57,9 +60,18 @@ func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page int
 }
 
 func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request dto_profile.CreateProfileRequestDto) (dto_profile.ProfileDto, error) {
+	total, err := s.ProfileRepositoryInterface.CountByUserID(ctx, userID)
+	if err != nil {
+		return dto_profile.ProfileDto{}, err
+	}
+
+	if total >= shared_constants_profile.MaxProfilesPerUser {
+		return dto_profile.ProfileDto{}, shared_errors.ErrProfileLimitReached
+	}
+
 	profile := models.Profile{
 		UserID:    userID,
-		Name:      request.Name,
+		Name:      strings.TrimSpace(request.Name),
 		AvatarURL: request.AvatarURL,
 		IsKids:    request.IsKids,
 	}

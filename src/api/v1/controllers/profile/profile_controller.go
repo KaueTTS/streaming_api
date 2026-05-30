@@ -1,6 +1,8 @@
 package v1_controller_profile
 
 import (
+	"errors"
+
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
@@ -79,6 +81,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 // @Success 201 {object} dto_profile.ProfileDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 409 {object} dto_shared.ErrorDto
 // @Failure 500 {object} dto_shared.ErrorDto
 // @Router /v1/profiles [post]
 // @Security BearerAuth
@@ -113,6 +116,10 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 
 	response, err := c.ProfileServiceInterface.CreateProfile(ctx.UserContext(), userID, request)
 	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileLimitReached) {
+			return responses.Conflict(ctx, shared_errors_profile.ProfileLimitReached)
+		}
+
 		return responses.InternalServerError(ctx, shared_errors_profile.FailedToCreateProfile)
 	}
 

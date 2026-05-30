@@ -4,17 +4,17 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
+	shared_constants_auth "github.com/KaueTTS/streaming_api/src/shared/constants/auth"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func Validate(password string) error {
-	if utf8.RuneCountInString(password) < shared_constants.MinPasswordLength {
+	if utf8.RuneCountInString(password) < shared_constants_auth.MinPasswordLength {
 		return shared_errors.ErrPasswordMustLeast8Character
 	}
 
-	if len([]byte(password)) > shared_constants.MaxPasswordBytes {
+	if len([]byte(password)) > shared_constants_auth.MaxPasswordBytes {
 		return shared_errors.ErrPasswordMustMaximum72Bytes
 	}
 

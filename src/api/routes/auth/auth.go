@@ -6,7 +6,7 @@ import (
 	auth_middleware "github.com/KaueTTS/streaming_api/src/middlewares"
 	repository_sqlite_user "github.com/KaueTTS/streaming_api/src/repositories/sqlite/user"
 	service_auth "github.com/KaueTTS/streaming_api/src/services/auth"
-	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
+	shared_constants_auth "github.com/KaueTTS/streaming_api/src/shared/constants/auth"
 	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -19,8 +19,8 @@ func Init(app *fiber.App, db *gorm.DB) {
 	authController := v1_controller_auth.NewAuthController(authService)
 
 	authLimiter := limiter.New(limiter.Config{
-		Max:        shared_constants.AuthRateLimitMax,
-		Expiration: shared_constants.AuthRateLimitExpiration,
+		Max:        shared_constants_auth.AuthRateLimitMax,
+		Expiration: shared_constants_auth.AuthRateLimitExpiration,
 		KeyGenerator: func(ctx *fiber.Ctx) string {
 			return ctx.IP()
 		},

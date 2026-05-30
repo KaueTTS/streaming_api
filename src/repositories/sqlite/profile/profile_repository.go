@@ -50,6 +50,19 @@ func (r *ProfileRepository) FindByUserID(ctx context.Context, userID uint, page 
 	return profiles, total, nil
 }
 
+func (r *ProfileRepository) CountByUserID(ctx context.Context, userID uint) (int64, error) {
+	var total int64
+
+	if err := r.db.WithContext(ctx).
+		Model(&models.Profile{}).
+		Where("user_id = ?", userID).
+		Count(&total).Error; err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
 func (r *ProfileRepository) Create(ctx context.Context, profile *models.Profile) error {
 	if err := r.db.WithContext(ctx).Create(profile).Error; err != nil {
 		return err
