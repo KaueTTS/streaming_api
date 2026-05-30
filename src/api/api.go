@@ -8,6 +8,7 @@ import (
 	route_health "github.com/KaueTTS/streaming_api/src/api/routes/health"
 	route_profile "github.com/KaueTTS/streaming_api/src/api/routes/profile"
 	route_swagger "github.com/KaueTTS/streaming_api/src/api/routes/swagger"
+	container "github.com/KaueTTS/streaming_api/src/container"
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
@@ -37,7 +38,9 @@ func Init(db *gorm.DB) error {
 		AllowHeaders: "Authorization,Content-Type",
 	}))
 
-	injectRoutes(app, db)
+	applicationContainer := container.Build(db)
+
+	injectRoutes(app, applicationContainer)
 
 	port := fmt.Sprintf(":%s", env.Port)
 	if err := app.Listen(port); err != nil {
@@ -47,10 +50,10 @@ func Init(db *gorm.DB) error {
 	return nil
 }
 
-func injectRoutes(app *fiber.App, db *gorm.DB) {
+func injectRoutes(app *fiber.App, applicationContainer *container.Container) {
 	route_health.Init(app)
 	route_swagger.Init(app)
 
-	route_auth.Init(app, db)
-	route_profile.Init(app, db)
+	route_auth.Init(app, applicationContainer.AuthController)
+	route_profile.Init(app, applicationContainer.ProfileController)
 }
