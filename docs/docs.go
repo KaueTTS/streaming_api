@@ -186,10 +186,27 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Retorna uma lista paginada dos perfis associados ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite recuperar todos eles de forma organizada e eficiente.",
                 "tags": [
                     "profiles"
                 ],
                 "summary": "Listar os perfis do usuário logado",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Número de itens por página",
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -223,6 +240,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Cria um novo perfil associado ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as informações fornecidas no corpo da requisição.",
                 "tags": [
                     "profiles"
                 ],

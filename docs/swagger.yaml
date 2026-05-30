@@ -226,6 +226,20 @@ paths:
       - authorization
   /v1/profiles:
     get:
+      description: Retorna uma lista paginada dos perfis associados ao usuário autenticado.
+        O usuário pode ter múltiplos perfis, e esta rota permite recuperar todos eles
+        de forma organizada e eficiente.
+      parameters:
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Número de itens por página
+        in: query
+        name: per_page
+        type: integer
       responses:
         "200":
           description: OK
@@ -249,6 +263,9 @@ paths:
       tags:
       - profiles
     post:
+      description: Cria um novo perfil associado ao usuário autenticado. O usuário
+        pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as
+        informações fornecidas no corpo da requisição.
       parameters:
       - description: Dados para criar um perfil
         in: body

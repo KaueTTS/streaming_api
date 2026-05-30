@@ -13,14 +13,9 @@ var (
 	AppEnv                         string
 	AppName                        string
 	SQLiteDatabaseURL              string
-	RedisHost                      string
-	RedisUsername                  string
-	RedisPassword                  string
 	AuthTokenExpirationTimeInHours float64
-	DDAppSec                       bool
-	DDWithLogStartup               bool
-	TmdbApiURL                     string
 	JWTSecret                      string
+	OTLPExporterEndpoint           string
 )
 
 func Init() error {
@@ -41,27 +36,15 @@ func Init() error {
 		AppName = "streaming_api"
 	}
 
+	OTLPExporterEndpoint = os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	if OTLPExporterEndpoint == "" {
+		OTLPExporterEndpoint = "localhost:4318"
+	}
+
 	SQLiteDatabaseURL = os.Getenv("SQLITE_DATABASE_URL")
 	if SQLiteDatabaseURL == "" {
 		return fmt.Errorf("a variável de ambiente SQLITE_DATABASE_URL precisa ser informada")
 	}
-
-	RedisHost = os.Getenv("REDIS_HOST")
-	// if RedisHost == "" {
-	// 	return fmt.Errorf("a variável de ambiente REDIS_HOST precisa ser informada")
-	// }
-
-	RedisUsername = os.Getenv("REDIS_USERNAME")
-	// if RedisUsername == "" {
-	// 	return fmt.Errorf("a variável de ambiente REDIS_USERNAME precisa ser informada")
-	// }
-
-	RedisPassword = os.Getenv("REDIS_PASSWORD")
-	// if RedisPassword == "" {
-	// 	return fmt.Errorf("a variável de ambiente REDIS_PASSWORD precisa ser informada")
-	// }
-
-	TmdbApiURL = os.Getenv("TMDB_API_URL")
 
 	JWTSecret = os.Getenv("JWT_SECRET")
 	if JWTSecret == "" {

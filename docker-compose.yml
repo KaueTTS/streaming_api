@@ -11,6 +11,15 @@ services:
       SQLITE_DATABASE_URL: "/app/data/streaming_api.db"
       JWT_SECRET: "development-secret"
       AUTH_TOKEN_EXPIRATION_TIME_IN_HOURS: "8"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "jaeger:4318"
     volumes:
       - ./data:/app/data
+    restart: unless-stopped
+    
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    container_name: streaming-api-jaeger
+    ports:
+      - "16686:16686"
+      - "4318:4318"
     restart: unless-stopped

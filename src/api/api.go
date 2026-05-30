@@ -2,12 +2,14 @@ package api
 
 import (
 	"fmt"
+	"strings"
 
 	route_auth "github.com/KaueTTS/streaming_api/src/api/routes/auth"
 	route_health "github.com/KaueTTS/streaming_api/src/api/routes/health"
 	route_profile "github.com/KaueTTS/streaming_api/src/api/routes/profile"
 	route_swagger "github.com/KaueTTS/streaming_api/src/api/routes/swagger"
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
+	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
@@ -21,6 +23,13 @@ func Init(db *gorm.DB) error {
 	})
 
 	app.Use(recover.New())
+	app.Use(otelfiber.Middleware(otelfiber.WithNext(func(c *fiber.Ctx) bool {
+		path := c.Path()
+
+		return path == "/health" ||
+			path == "/swagger" ||
+			strings.HasPrefix(path, "/swagger/")
+	})))
 	app.Use(helmet.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",

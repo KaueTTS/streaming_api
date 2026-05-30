@@ -2,6 +2,7 @@ package validator
 
 import (
 	"strings"
+	"unicode/utf8"
 
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
@@ -18,12 +19,12 @@ func ValidateCreateProfileRequest(request dto_profile.CreateProfileRequestDto) [
 			details,
 			NewDetail(shared_constants.Name, name, shared_errors_auth.NameRequired),
 		)
-	} else if len(name) < 2 {
+	} else if utf8.RuneCountInString(name) < shared_constants.MinNameLength {
 		details = append(
 			details,
 			NewDetail(shared_constants.Name, name, shared_errors_auth.NameMustLeast2Character),
 		)
-	} else if len(name) > 120 {
+	} else if utf8.RuneCountInString(name) > shared_constants.MaxNameLength {
 		details = append(
 			details,
 			NewDetail(shared_constants.Name, name, shared_errors_auth.NameMustMaximum120Character),

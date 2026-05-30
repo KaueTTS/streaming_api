@@ -25,7 +25,9 @@ func NewProfileController(profileServiceInterface service_interface.ProfileServi
 
 // ListProfiles godoc
 // @Summary Listar os perfis do usuário logado
-// @Description
+// @Description Retorna uma lista paginada dos perfis associados ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite recuperar todos eles de forma organizada e eficiente.
+// @Param page query int false "Número da página" default(1)
+// @Param per_page query int false "Número de itens por página" default(10)
 // @Tags profiles
 // @Success 200 {object} dto_profile.ProfileResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
@@ -59,7 +61,9 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.ProfileServiceInterface.ListProfiles(ctx.Context(), userID, pagination.Page, pagination.PerPage)
+	page, perPage := validator_profile.ValidatePagination(pagination)
+
+	response, err := c.ProfileServiceInterface.ListProfiles(ctx.UserContext(), userID, page, perPage)
 	if err != nil {
 		return responses.InternalServerError(ctx, shared_errors_profile.FailedToListProfiles)
 	}
@@ -69,7 +73,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 
 // CreateProfile godoc
 // @Summary Criar um novo perfil para o usuário logado
-// @Description
+// @Description Cria um novo perfil associado ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as informações fornecidas no corpo da requisição.
 // @Param request body dto_profile.CreateProfileRequestDto true "Dados para criar um perfil"
 // @Tags profiles
 // @Success 201 {object} dto_profile.ProfileDto
@@ -107,7 +111,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.ProfileServiceInterface.CreateProfile(ctx.Context(), userID, request)
+	response, err := c.ProfileServiceInterface.CreateProfile(ctx.UserContext(), userID, request)
 	if err != nil {
 		return responses.InternalServerError(ctx, shared_errors_profile.FailedToCreateProfile)
 	}
@@ -116,9 +120,9 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 }
 
 func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
-	return nil
+	return ctx.Status(fiber.StatusNotImplemented).JSON(fiber.Map{"message": "not implemented"})
 }
 
 func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
-	return nil
+	return ctx.Status(fiber.StatusNotImplemented).JSON(fiber.Map{"message": "not implemented"})
 }

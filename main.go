@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -8,6 +9,7 @@ import (
 	api "github.com/KaueTTS/streaming_api/src/api"
 	sqlite_conn "github.com/KaueTTS/streaming_api/src/configs/db/sqlite"
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
+	"github.com/KaueTTS/streaming_api/src/configs/tracing"
 )
 
 // @title Streaming API
@@ -37,6 +39,17 @@ func run() error {
 	if err := env.Init(); err != nil {
 		return fmt.Errorf("erro ao inicializar variáveis de ambiente: %w", err)
 	}
+
+	ctx := context.Background()
+	tracerProvider, err := tracing.Init(ctx)
+	if err != nil {
+		return fmt.Errorf("erro ao inicializar tracing: %w", err)
+	}
+	defer func() {
+		if err := tracerProvider.Shutdown(ctx); err != nil {
+			log.Printf("erro ao finalizar tracing: %v", err)
+		}
+	}()
 
 	db, err := sqlite_conn.Init()
 	if err != nil {

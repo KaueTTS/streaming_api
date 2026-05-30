@@ -58,7 +58,7 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.AuthServiceInterface.Register(ctx.Context(), request)
+	response, err := c.AuthServiceInterface.Register(ctx.UserContext(), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrEmailAlreadyInUse) {
 			return responses.Conflict(ctx, shared_errors_auth.EmailAlreadyInUse)
@@ -118,7 +118,7 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.AuthServiceInterface.Login(ctx.Context(), request)
+	response, err := c.AuthServiceInterface.Login(ctx.UserContext(), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrInvalidCredentials) {
 			return responses.Unauthorized(ctx, shared_errors_auth.InvalidCredentials)
@@ -147,7 +147,7 @@ func (c *AuthController) Me(ctx *fiber.Ctx) error {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	response, err := c.AuthServiceInterface.Me(ctx.Context(), userID)
+	response, err := c.AuthServiceInterface.Me(ctx.UserContext(), userID)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrUserNotFound) {
 			return responses.NotFound(ctx, shared_errors_auth.UserNotFound)
