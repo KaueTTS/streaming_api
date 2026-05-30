@@ -10,4 +10,5 @@ func Init(app *fiber.App, profileController *v1_controller_profile.ProfileContro
 	privateGroup := app.Group("/v1", auth_middleware.AuthRequired())
 	privateGroup.Get("/profiles", profileController.ListProfiles)
 	privateGroup.Post("/profiles", profileController.CreateProfile)
+	privateGroup.Put("/profiles/:id", profileController.UpdateProfile)
 }

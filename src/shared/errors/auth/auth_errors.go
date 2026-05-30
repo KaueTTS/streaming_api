@@ -18,17 +18,12 @@ const (
 )
 
 const (
-	NameRequired                = "nome é obrigatório"
-	NameMustLeast2Character     = "nome deve ter pelo menos 2 caracteres"
-	NameMustMaximum120Character = "nome deve ter no máximo 120 caracteres"
-)
-
-const (
 	PasswordRequired              = "senha é obrigatória"
 	PasswordMustLeast8Character   = "senha deve ter pelo menos 8 caracteres"
 	PasswordMustMaximum72Bytes    = "senha deve ter no máximo 72 bytes"
 	PasswordMustLettersAndNumbers = "senha deve conter letras e números"
 	InvalidPassword               = "senha inválida"
+	ErrInvalidCredentials         = "credenciais inválidas"
 )
 
 const (

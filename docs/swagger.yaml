@@ -44,15 +44,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  dto_profile.CreateProfileRequestDto:
-    properties:
-      avatar_url:
-        type: string
-      is_kids:
-        type: boolean
-      name:
-        type: string
-    type: object
   dto_profile.ProfileDto:
     properties:
       avatar_url:
@@ -69,6 +60,15 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  dto_profile.ProfileRequestDto:
+    properties:
+      avatar_url:
+        type: string
+      is_kids:
+        type: boolean
+      name:
+        type: string
     type: object
   dto_profile.ProfileResponseDto:
     properties:
@@ -272,7 +272,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto_profile.CreateProfileRequestDto'
+          $ref: '#/definitions/dto_profile.ProfileRequestDto'
       responses:
         "201":
           description: Created
@@ -286,6 +286,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/dto_shared.ErrorDto'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
         "500":
           description: Internal Server Error
           schema:
@@ -293,6 +297,46 @@ paths:
       security:
       - BearerAuth: []
       summary: Criar um novo perfil para o usuário logado
+      tags:
+      - profiles
+  /v1/profiles/{id}:
+    put:
+      parameters:
+      - description: ID do perfil
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados para atualizar um pefil
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto_profile.ProfileRequestDto'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_profile.ProfileDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Atualizar um perfil já cadastrado para o usuário logado
       tags:
       - profiles
 produces:

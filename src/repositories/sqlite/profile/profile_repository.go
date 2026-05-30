@@ -70,3 +70,24 @@ func (r *ProfileRepository) Create(ctx context.Context, profile *models.Profile)
 
 	return nil
 }
+
+func (r *ProfileRepository) Update(ctx context.Context, profile *models.Profile) error {
+	var existingProfile models.Profile
+
+	if err := r.db.WithContext(ctx).
+		Where("id = ? AND user_id = ?", profile.ID, profile.UserID).
+		First(&existingProfile).Error; err != nil {
+		return err
+	}
+
+	existingProfile.Name = profile.Name
+	existingProfile.AvatarURL = profile.AvatarURL
+	existingProfile.IsKids = profile.IsKids
+
+	if err := r.db.WithContext(ctx).Save(&existingProfile).Error; err != nil {
+		return err
+	}
+
+	*profile = existingProfile
+	return nil
+}

@@ -252,7 +252,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto_profile.CreateProfileRequestDto"
+                            "$ref": "#/definitions/dto_profile.ProfileRequestDto"
                         }
                     }
                 ],
@@ -271,6 +271,75 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/profiles/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "profiles"
+                ],
+                "summary": "Atualizar um perfil já cadastrado para o usuário logado",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do perfil",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados para atualizar um pefil",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto_profile.ProfileRequestDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto_profile.ProfileDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
@@ -351,20 +420,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto_profile.CreateProfileRequestDto": {
-            "type": "object",
-            "properties": {
-                "avatar_url": {
-                    "type": "string"
-                },
-                "is_kids": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "dto_profile.ProfileDto": {
             "type": "object",
             "properties": {
@@ -388,6 +443,20 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto_profile.ProfileRequestDto": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "is_kids": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

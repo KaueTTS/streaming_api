@@ -2,6 +2,7 @@ package service_profile
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
@@ -10,6 +11,7 @@ import (
 	repository_interface "github.com/KaueTTS/streaming_api/src/repositories/interfaces"
 	shared_constants_profile "github.com/KaueTTS/streaming_api/src/shared/constants/profile"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	"gorm.io/gorm"
 )
 
 type ProfileService struct {
@@ -22,7 +24,7 @@ func NewProfileService(profileRepositoryInterface repository_interface.ProfileRe
 	}
 }
 
-func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page int, perPage int) (dto_profile.ProfileResponseDto, error) {
+func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page, perPage int) (dto_profile.ProfileResponseDto, error) {
 	var profiles []models.Profile
 	var total int64
 	var err error
@@ -59,7 +61,7 @@ func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page int
 	}, nil
 }
 
-func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request dto_profile.CreateProfileRequestDto) (dto_profile.ProfileDto, error) {
+func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error) {
 	total, err := s.ProfileRepositoryInterface.CountByUserID(ctx, userID)
 	if err != nil {
 		return dto_profile.ProfileDto{}, err
@@ -77,6 +79,34 @@ func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request
 	}
 
 	if err := s.ProfileRepositoryInterface.Create(ctx, &profile); err != nil {
+		return dto_profile.ProfileDto{}, err
+	}
+
+	return dto_profile.ProfileDto{
+		ID:        profile.ID,
+		UserID:    profile.UserID,
+		Name:      profile.Name,
+		AvatarURL: profile.AvatarURL,
+		IsKids:    profile.IsKids,
+		CreatedAt: profile.CreatedAt,
+		UpdatedAt: profile.UpdatedAt,
+	}, nil
+}
+
+func (s *ProfileService) UpdateProfile(ctx context.Context, userID, profileID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error) {
+	profile := models.Profile{
+		ID:        profileID,
+		UserID:    userID,
+		Name:      strings.TrimSpace(request.Name),
+		AvatarURL: request.AvatarURL,
+		IsKids:    request.IsKids,
+	}
+
+	if err := s.ProfileRepositoryInterface.Update(ctx, &profile); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto_profile.ProfileDto{}, shared_errors.ErrProfileNotFound
+		}
+
 		return dto_profile.ProfileDto{}, err
 	}
 

@@ -2,6 +2,7 @@ package v1_controller_profile
 
 import (
 	"errors"
+	"strconv"
 
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
@@ -76,7 +77,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 // CreateProfile godoc
 // @Summary Criar um novo perfil para o usuário logado
 // @Description Cria um novo perfil associado ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as informações fornecidas no corpo da requisição.
-// @Param request body dto_profile.CreateProfileRequestDto true "Dados para criar um perfil"
+// @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
 // @Tags profiles
 // @Success 201 {object} dto_profile.ProfileDto
 // @Failure 400 {object} dto_shared.ErrorDto
@@ -91,7 +92,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	var request dto_profile.CreateProfileRequestDto
+	var request dto_profile.ProfileRequestDto
 	if err := ctx.BodyParser(&request); err != nil {
 		return responses.BadRequest(
 			ctx,
@@ -106,7 +107,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if errDetails := validator_profile.ValidateCreateProfileRequest(request); len(errDetails) > 0 {
+	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
 		return responses.BadRequest(
 			ctx,
 			shared_errors_profile.InvalidCreateProfileData,
@@ -126,8 +127,73 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
+// UpdateProfile godoc
+// @Summary Atualizar um perfil já cadastrado para o usuário logado
+// @Param id path int true "ID do perfil"
+// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um pefil"
+// @Tags profiles
+// @Success 200 {object} dto_profile.ProfileDto
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 404 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/profiles/{id} [put]
+// @Security BearerAuth
 func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
-	return ctx.Status(fiber.StatusNotImplemented).JSON(fiber.Map{"message": "not implemented"})
+	userID, ok := ctx.Locals("user_id").(uint)
+	if !ok || userID == 0 {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	profileIDParam := ctx.Params("id")
+	profileID, err := strconv.ParseUint(profileIDParam, 10, 64)
+	if err != nil || profileID == 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidProfileID,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   "id",
+					Value:   profileIDParam,
+					Message: shared_errors_profile.InvalidProfileID,
+				},
+			},
+		)
+	}
+
+	var request dto_profile.ProfileRequestDto
+	if err := ctx.BodyParser(&request); err != nil {
+		return responses.BadRequest(
+			ctx,
+			shared_errors.InvalidRequestBody,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   "",
+					Value:   "",
+					Message: err.Error(),
+				},
+			},
+		)
+	}
+
+	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidUpdateProfileData,
+			errDetails,
+		)
+	}
+
+	response, err := c.ProfileServiceInterface.UpdateProfile(ctx.UserContext(), userID, uint(profileID), request)
+	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
+		return responses.InternalServerError(ctx, shared_errors_profile.FailedToUpdateProfile)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
 func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
