@@ -15,8 +15,10 @@ services:
     volumes:
       - ./data:/app/data
     depends_on:
-      - redis
-      - jaeger
+      redis:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
     restart: unless-stopped
     
   jaeger:
