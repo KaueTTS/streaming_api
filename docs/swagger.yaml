@@ -105,7 +105,7 @@ definitions:
         type: integer
       pageCount:
         type: integer
-      perPage:
+      per_page:
         type: integer
       total:
         type: integer
@@ -226,9 +226,6 @@ paths:
       - authorization
   /v1/profiles:
     get:
-      description: Retorna uma lista paginada dos perfis associados ao usuário autenticado.
-        O usuário pode ter múltiplos perfis, e esta rota permite recuperar todos eles
-        de forma organizada e eficiente.
       parameters:
       - default: 1
         description: Número da página
@@ -263,9 +260,6 @@ paths:
       tags:
       - profiles
     post:
-      description: Cria um novo perfil associado ao usuário autenticado. O usuário
-        pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as
-        informações fornecidas no corpo da requisição.
       parameters:
       - description: Dados para criar um perfil
         in: body
@@ -300,6 +294,37 @@ paths:
       tags:
       - profiles
   /v1/profiles/{id}:
+    delete:
+      parameters:
+      - description: ID do perfil
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Remover um perfil do usuário logado
+      tags:
+      - profiles
     put:
       parameters:
       - description: ID do perfil

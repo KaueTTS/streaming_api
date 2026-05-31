@@ -10,12 +10,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
-func Init(app *fiber.App, authController *v1_controller_auth.AuthController) {
+func Init(app *fiber.App, authController *v1_controller_auth.AuthController, limiterStorage fiber.Storage) {
 	authLimiter := limiter.New(limiter.Config{
 		Max:        shared_constants_auth.AuthRateLimitMax,
 		Expiration: shared_constants_auth.AuthRateLimitExpiration,
+		Storage:    limiterStorage,
 		KeyGenerator: func(ctx *fiber.Ctx) string {
-			return ctx.IP()
+			return "streaming-api:auth:" + ctx.IP()
 		},
 		LimitReached: func(ctx *fiber.Ctx) error {
 			return responses.TooManyRequests(ctx, shared_errors_auth.TooManyAuthAttempts)

@@ -11,4 +11,5 @@ func Init(app *fiber.App, profileController *v1_controller_profile.ProfileContro
 	privateGroup.Get("/profiles", profileController.ListProfiles)
 	privateGroup.Post("/profiles", profileController.CreateProfile)
 	privateGroup.Put("/profiles/:id", profileController.UpdateProfile)
+	privateGroup.Delete("/profiles/:id", profileController.DeleteProfile)
 }

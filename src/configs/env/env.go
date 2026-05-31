@@ -15,6 +15,11 @@ var (
 	OTLPExporterEndpoint           string
 	JWTSecret                      string
 	SQLiteDatabaseURL              string
+	RedisHost                      string
+	RedisPort                      string
+	RedisUsername                  string
+	RedisPassword                  string
+	RedisDatabase                  int
 	AuthTokenExpirationTimeInHours float64
 	TMDBBaseURL                    string
 	TMDBAccessToken                string
@@ -51,6 +56,26 @@ func Init() error {
 	SQLiteDatabaseURL = os.Getenv("SQLITE_DATABASE_URL")
 	if SQLiteDatabaseURL == "" {
 		return fmt.Errorf("a variável de ambiente SQLITE_DATABASE_URL precisa ser informada")
+	}
+
+	RedisHost = os.Getenv("REDIS_HOST")
+
+	RedisPort = os.Getenv("REDIS_PORT")
+	if RedisPort == "" {
+		RedisPort = "6379"
+	}
+
+	RedisUsername = os.Getenv("REDIS_USERNAME")
+	RedisPassword = os.Getenv("REDIS_PASSWORD")
+
+	RedisDatabase = 0
+	if value := os.Getenv("REDIS_DATABASE"); value != "" {
+		parsedValue, err := strconv.Atoi(value)
+		if err != nil || parsedValue < 0 {
+			return fmt.Errorf("REDIS_DATABASE precisa ser um número maior ou igual a zero")
+		}
+
+		RedisDatabase = parsedValue
 	}
 
 	AuthTokenExpirationTimeInHours = 8

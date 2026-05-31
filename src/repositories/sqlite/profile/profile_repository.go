@@ -17,16 +17,6 @@ func NewProfileRepository(db *gorm.DB) *ProfileRepository {
 	}
 }
 
-func (r *ProfileRepository) FindAll(ctx context.Context) ([]models.Profile, error) {
-	var profiles []models.Profile
-
-	if err := r.db.WithContext(ctx).Order("name asc").Find(&profiles).Error; err != nil {
-		return nil, err
-	}
-
-	return profiles, nil
-}
-
 func (r *ProfileRepository) FindByUserID(ctx context.Context, userID uint, page int, perPage int) ([]models.Profile, int64, error) {
 	var profiles []models.Profile
 	var total int64
@@ -89,5 +79,21 @@ func (r *ProfileRepository) Update(ctx context.Context, profile *models.Profile)
 	}
 
 	*profile = existingProfile
+	return nil
+}
+
+func (r *ProfileRepository) Delete(ctx context.Context, userID, profileID uint) error {
+	result := r.db.WithContext(ctx).
+		Where("id = ? AND user_id = ?", profileID, userID).
+		Delete(&models.Profile{})
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+
 	return nil
 }

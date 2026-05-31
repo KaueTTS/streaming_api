@@ -28,7 +28,7 @@ func NewProfileController(profileServiceInterface service_interface.ProfileServi
 
 // ListProfiles godoc
 // @Summary Listar os perfis do usuário logado
-// @Description Retorna uma lista paginada dos perfis associados ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite recuperar todos eles de forma organizada e eficiente.
+// @Description
 // @Param page query int false "Número da página" default(1)
 // @Param per_page query int false "Número de itens por página" default(10)
 // @Tags profiles
@@ -76,7 +76,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 
 // CreateProfile godoc
 // @Summary Criar um novo perfil para o usuário logado
-// @Description Cria um novo perfil associado ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as informações fornecidas no corpo da requisição.
+// @Description
 // @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
 // @Tags profiles
 // @Success 201 {object} dto_profile.ProfileDto
@@ -129,6 +129,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 
 // UpdateProfile godoc
 // @Summary Atualizar um perfil já cadastrado para o usuário logado
+// @Description
 // @Param id path int true "ID do perfil"
 // @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um pefil"
 // @Tags profiles
@@ -153,7 +154,7 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 			shared_errors_profile.InvalidProfileID,
 			[]dto_shared.DetailErrorDto{
 				{
-					Field:   "id",
+					Field:   shared_constants.ID,
 					Value:   profileIDParam,
 					Message: shared_errors_profile.InvalidProfileID,
 				},
@@ -196,6 +197,47 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
+// DeleteProfile godoc
+// @Summary Remover um perfil do usuário logado
+// @Description
+// @Param id path int true "ID do perfil"
+// @Tags profiles
+// @Success 204
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 404 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/profiles/{id} [delete]
+// @Security BearerAuth
 func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
-	return ctx.Status(fiber.StatusNotImplemented).JSON(fiber.Map{"message": "not implemented"})
+	userID, ok := ctx.Locals("user_id").(uint)
+	if !ok || userID == 0 {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	profileIDParam := ctx.Params("id")
+	profileID, err := strconv.ParseUint(profileIDParam, 10, 64)
+	if err != nil || profileID == 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidProfileID,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   shared_constants.ID,
+					Value:   profileIDParam,
+					Message: shared_errors_profile.InvalidProfileID,
+				},
+			},
+		)
+	}
+
+	if err := c.ProfileServiceInterface.DeleteProfile(ctx.UserContext(), userID, uint(profileID)); err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
+		return responses.InternalServerError(ctx, shared_errors_profile.FailedToDeleteProfile)
+	}
+
+	return ctx.SendStatus(fiber.StatusNoContent)
 }

@@ -120,3 +120,15 @@ func (s *ProfileService) UpdateProfile(ctx context.Context, userID, profileID ui
 		UpdatedAt: profile.UpdatedAt,
 	}, nil
 }
+
+func (s *ProfileService) DeleteProfile(ctx context.Context, userID, profileID uint) error {
+	if err := s.ProfileRepositoryInterface.Delete(ctx, userID, profileID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return shared_errors.ErrProfileNotFound
+		}
+
+		return err
+	}
+
+	return nil
+}

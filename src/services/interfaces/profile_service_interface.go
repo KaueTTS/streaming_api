@@ -10,4 +10,5 @@ type ProfileServiceInterface interface {
 	ListProfiles(ctx context.Context, userID uint, page, perPage int) (dto_profile.ProfileResponseDto, error)
 	CreateProfile(ctx context.Context, userID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error)
 	UpdateProfile(ctx context.Context, userID, profileID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error)
+	DeleteProfile(ctx context.Context, userID, profileID uint) error
 }

@@ -7,8 +7,9 @@ import (
 )
 
 type ProfileRepositoryInterface interface {
-	FindByUserID(ctx context.Context, userID uint, page int, perPage int) ([]models.Profile, int64, error)
+	FindByUserID(ctx context.Context, userID uint, page, perPage int) ([]models.Profile, int64, error)
 	CountByUserID(ctx context.Context, userID uint) (int64, error)
 	Create(ctx context.Context, profile *models.Profile) error
 	Update(ctx context.Context, profile *models.Profile) error
+	Delete(ctx context.Context, userID, profileID uint) error
 }

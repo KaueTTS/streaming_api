@@ -186,7 +186,6 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retorna uma lista paginada dos perfis associados ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite recuperar todos eles de forma organizada e eficiente.",
                 "tags": [
                     "profiles"
                 ],
@@ -240,7 +239,6 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Cria um novo perfil associado ao usuário autenticado. O usuário pode ter múltiplos perfis, e esta rota permite criar um novo perfil com as informações fornecidas no corpo da requisição.",
                 "tags": [
                     "profiles"
                 ],
@@ -325,6 +323,55 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto_profile.ProfileDto"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "profiles"
+                ],
+                "summary": "Remover um perfil do usuário logado",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do perfil",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -514,7 +561,7 @@ const docTemplate = `{
                 "pageCount": {
                     "type": "integer"
                 },
-                "perPage": {
+                "per_page": {
                     "type": "integer"
                 },
                 "total": {

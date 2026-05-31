@@ -18,6 +18,11 @@ func setDefaultEnv(t *testing.T) {
 	t.Setenv("SQLITE_DATABASE_URL", "file:test.db?cache=shared&mode=memory")
 	t.Setenv("JWT_SECRET", "test_secret")
 	t.Setenv("AUTH_TOKEN_EXPIRATION_TIME_IN_HOURS", "4")
+	t.Setenv("REDIS_HOST", "redis")
+	t.Setenv("REDIS_PORT", "6379")
+	t.Setenv("REDIS_USERNAME", "default")
+	t.Setenv("REDIS_PASSWORD", "redis_password")
+	t.Setenv("REDIS_DATABASE", "1")
 	t.Setenv("TMDB_BASE_URL", "https://api.themoviedb.org/3")
 	t.Setenv("TMDB_ACCESS_TOKEN", "test_tmdb_access_token")
 }
@@ -36,6 +41,11 @@ func TestInit(t *testing.T) {
 		assert.Equal(t, "file:test.db?cache=shared&mode=memory", env.SQLiteDatabaseURL)
 		assert.Equal(t, "test_secret", env.JWTSecret)
 		assert.Equal(t, 4.0, env.AuthTokenExpirationTimeInHours)
+		assert.Equal(t, "redis", env.RedisHost)
+		assert.Equal(t, "6379", env.RedisPort)
+		assert.Equal(t, "default", env.RedisUsername)
+		assert.Equal(t, "redis_password", env.RedisPassword)
+		assert.Equal(t, 1, env.RedisDatabase)
 		assert.Equal(t, "https://api.themoviedb.org/3", env.TMDBBaseURL)
 		assert.Equal(t, "test_tmdb_access_token", env.TMDBAccessToken)
 	})
@@ -47,16 +57,22 @@ func TestInit(t *testing.T) {
 		expectedErr string
 	}{
 		{
+			name:        "should return error if JWT_SECRET is missing",
+			envKey:      "JWT_SECRET",
+			envValue:    "",
+			expectedErr: "a variável de ambiente JWT_SECRET precisa ser informada",
+		},
+		{
 			name:        "should return error if SQLITE_DATABASE_URL is missing",
 			envKey:      "SQLITE_DATABASE_URL",
 			envValue:    "",
 			expectedErr: "a variável de ambiente SQLITE_DATABASE_URL precisa ser informada",
 		},
 		{
-			name:        "should return error if JWT_SECRET is missing",
-			envKey:      "JWT_SECRET",
-			envValue:    "",
-			expectedErr: "a variável de ambiente JWT_SECRET precisa ser informada",
+			name:        "should return error if redis database is invalid",
+			envKey:      "REDIS_DATABASE",
+			envValue:    "-1",
+			expectedErr: "REDIS_DATABASE precisa ser um número maior ou igual a zero",
 		},
 		{
 			name:        "should return error if auth token expiration is invalid",

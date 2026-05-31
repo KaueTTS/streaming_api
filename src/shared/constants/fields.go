@@ -1,7 +1,8 @@
 package shared_constants
 
-// auth
 const (
+	ID = "id"
+
 	Name     = "name"
 	Password = "password"
 	Email    = "email"

@@ -4,6 +4,7 @@ const (
 	FailedToListProfiles  = "erro ao listar perfis"
 	FailedToCreateProfile = "erro ao criar perfil"
 	FailedToUpdateProfile = "erro ao atualizar perfil"
+	FailedToDeleteProfile = "erro ao remover perfil"
 )
 
 const (
