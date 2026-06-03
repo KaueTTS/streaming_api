@@ -15,6 +15,27 @@
 
 ## Tecnologias
 
+<details closed>
+<summary>Back-End</summary>
+  <div width="140px">
+      <img src="https://skillicons.dev/icons?i=go,sqlite" />
+  </div>
+</details>
+
+<details closed>
+<summary>Infra</summary>
+  <div width="140px">
+      <img src="https://skillicons.dev/icons?i=docker" />
+  </div>
+</details>
+
+<details closed>
+<summary>Ferramentas</summary>
+  <div width="140px">
+      <img src="https://skillicons.dev/icons?i=vscode" />
+  </div>
+</details>
+
 ## Arquitetura
 
 ## Projeto em funcionamento
