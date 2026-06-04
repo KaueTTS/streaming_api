@@ -23,7 +23,7 @@ func (m *ProfileServiceMock) CreateProfile(ctx context.Context, userID uint, req
 	return args.Get(0).(dto_profile.ProfileDto), args.Error(1)
 }
 
-func (m *ProfileServiceMock) UpdateProfile(ctx context.Context, userID uint, profileID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error) {
+func (m *ProfileServiceMock) UpdateProfile(ctx context.Context, userID, profileID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error) {
 	args := m.Called(ctx, userID, profileID, request)
 
 	return args.Get(0).(dto_profile.ProfileDto), args.Error(1)

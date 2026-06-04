@@ -16,7 +16,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(userID uint, email string, role string) (string, error) {
+func GenerateToken(userID uint, email, role string) (string, error) {
 	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
 		return "", errors.New("JWT_SECRET não informado")
