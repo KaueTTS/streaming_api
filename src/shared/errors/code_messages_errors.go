@@ -9,4 +9,5 @@ const (
 	Conflict            = "CONFLICT"
 	TooManyRequests     = "TOO_MANY_REQUESTS"
 	MethodNotAllowed    = "METHOD_NOT_ALLOWED"
+	BadGateway          = "BAD_GATEWAY"
 )

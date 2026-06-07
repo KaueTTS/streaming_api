@@ -3,13 +3,13 @@ package shared_errors_auth
 const (
 	InvalidRegisterData = "dados de cadastro inválidos"
 	InvalidLoginData    = "dados de login inválidos"
+	InvalidToken        = "token inválido"
 
 	FailedToRegisterUser = "erro ao cadastrar usuário"
 	FailedToLogin        = "erro ao realizar login"
 
 	TokenMissingOrInvalid = "token não informado ou inválido"
 	TokenInvalidOrExpired = "token inválido ou expirado"
-	InvalidToken          = "token inválido"
 
 	UserNotFound                 = "usuário não encontrado"
 	FailedToGetAuthenticatedUser = "erro ao buscar usuário autenticado"

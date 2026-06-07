@@ -2,7 +2,6 @@ package validator
 
 import (
 	"net/mail"
-	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -12,12 +11,13 @@ import (
 	shared_constants_auth "github.com/KaueTTS/streaming_api/src/shared/constants/auth"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
+	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 )
 
 func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 
-	name := strings.TrimSpace(request.Name)
+	name := shared_normalizers.TrimString(request.Name)
 	if name == "" {
 		details = append(
 			details,
@@ -38,7 +38,7 @@ func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.D
 	details = append(details, validateEmail(request.Email)...)
 
 	password := request.Password
-	if strings.TrimSpace(password) == "" {
+	if shared_normalizers.TrimString(password) == "" {
 		details = append(
 			details,
 			NewDetail(shared_constants.Password, "", shared_errors_auth.PasswordRequired),
@@ -68,7 +68,7 @@ func ValidateLoginRequest(request dto_auth.LoginRequestDto) []dto_shared.DetailE
 
 	details = append(details, validateEmail(request.Email)...)
 
-	if strings.TrimSpace(request.Password) == "" {
+	if shared_normalizers.TrimString(request.Password) == "" {
 		details = append(
 			details,
 			NewDetail(shared_constants.Password, shared_constants.Hidden, shared_errors_auth.PasswordRequired),
@@ -79,7 +79,7 @@ func ValidateLoginRequest(request dto_auth.LoginRequestDto) []dto_shared.DetailE
 }
 
 func validateEmail(email string) []dto_shared.DetailErrorDto {
-	trimmedEmail := strings.TrimSpace(email)
+	trimmedEmail := shared_normalizers.TrimString(email)
 	if trimmedEmail == "" {
 		return []dto_shared.DetailErrorDto{NewDetail(shared_constants.Email, email, shared_errors_auth.EmailRequired)}
 	}

@@ -44,6 +44,46 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto_content.ContentDto:
+    properties:
+      backdrop_path:
+        type: string
+      description:
+        type: string
+      external_id:
+        type: integer
+      genre_ids:
+        items:
+          type: integer
+        type: array
+      original_language:
+        type: string
+      original_title:
+        type: string
+      popularity:
+        type: number
+      poster_path:
+        type: string
+      release_date:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      vote_average:
+        type: number
+      vote_count:
+        type: integer
+    type: object
+  dto_content.ContentResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto_content.ContentDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto_shared.PaginationDto'
+    type: object
   dto_profile.ProfileDto:
     properties:
       avatar_url:
@@ -224,6 +264,109 @@ paths:
       summary: Registra um novo usuário
       tags:
       - authorization
+  /v1/contents:
+    get:
+      description: Lista filmes ou séries usando a integração com a TMDB API
+      parameters:
+      - description: Tipo do conteúdo
+        enum:
+        - movie
+        - tv
+        in: query
+        name: type
+        required: true
+        type: string
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - description: 'Ordenação usada pela TMDB. Exemplo: popularity.desc'
+        in: query
+        name: sort_by
+        type: string
+      - description: IDs de gêneros separados por vírgula
+        in: query
+        name: with_genres
+        type: string
+      - description: 'Idioma da resposta. Exemplo: pt-BR'
+        in: query
+        name: language
+        type: string
+      - description: Ano de lançamento
+        in: query
+        name: year
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_content.ContentResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Listar conteúdos
+      tags:
+      - contents
+  /v1/contents/search:
+    get:
+      description: Busca filmes ou séries usando a integração com a TMDB API
+      parameters:
+      - description: Tipo do conteúdo
+        enum:
+        - movie
+        - tv
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: Termo pesquisado
+        in: query
+        name: query
+        required: true
+        type: string
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - description: 'Idioma da resposta. Exemplo: pt-BR'
+        in: query
+        name: language
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_content.ContentResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Buscar conteúdos
+      tags:
+      - contents
   /v1/profiles:
     get:
       parameters:

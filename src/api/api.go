@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	route_auth "github.com/KaueTTS/streaming_api/src/api/routes/auth"
+	route_content "github.com/KaueTTS/streaming_api/src/api/routes/content"
 	route_health "github.com/KaueTTS/streaming_api/src/api/routes/health"
 	route_profile "github.com/KaueTTS/streaming_api/src/api/routes/profile"
 	route_swagger "github.com/KaueTTS/streaming_api/src/api/routes/swagger"
@@ -62,5 +63,6 @@ func injectRoutes(app *fiber.App, applicationContainer *container.Container, lim
 	route_swagger.Init(app)
 
 	route_auth.Init(app, applicationContainer.AuthController, limiterStorage)
+	route_content.Init(app, applicationContainer.ContentController)
 	route_profile.Init(app, applicationContainer.ProfileController)
 }
