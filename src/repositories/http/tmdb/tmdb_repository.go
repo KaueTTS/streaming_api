@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"time"
 
-	httptrace "github.com/DataDog/dd-trace-go/contrib/net/http/v2"
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
 	dto "github.com/KaueTTS/streaming_api/src/repositories/http/tmdb/dto"
 	shared_constants_content "github.com/KaueTTS/streaming_api/src/shared/constants/content"
 	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 type TMDBRepository struct {
@@ -27,7 +27,8 @@ func NewTMDBRepository() *TMDBRepository {
 		baseURL: env.TMDBBaseURL,
 		token:   env.TMDBAccessToken,
 		httpClient: &http.Client{
-			Timeout: 10 * time.Second,
+			Timeout:   10 * time.Second,
+			Transport: otelhttp.NewTransport(http.DefaultTransport),
 		},
 	}
 }
@@ -62,8 +63,7 @@ func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentLi
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", r.token))
 	req.Header.Add("Accept", "application/json")
 
-	client := httptrace.WrapClient(r.httpClient)
-	resp, err := client.Do(req)
+	resp, err := r.httpClient.Do(req)
 	if err != nil {
 		return dto.GetContentResponseDto{}, err
 	}
@@ -100,8 +100,7 @@ func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.Content
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", r.token))
 	req.Header.Add("Accept", "application/json")
 
-	client := httptrace.WrapClient(r.httpClient)
-	resp, err := client.Do(req)
+	resp, err := r.httpClient.Do(req)
 	if err != nil {
 		return dto.GetContentResponseDto{}, err
 	}
