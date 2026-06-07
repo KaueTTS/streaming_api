@@ -1,13 +1,18 @@
 package shared_constants
 
+// Campos comuns
 const (
 	ID = "id"
+)
 
+// Campos de usuário
+const (
 	Name     = "name"
 	Password = "password"
 	Email    = "email"
 )
 
+// Campos de filtros
 const (
 	Type       = "type"
 	Query      = "query"
@@ -17,6 +22,7 @@ const (
 	Year       = "year"
 )
 
+// Campos de paginação
 const (
 	Page    = "page"
 	PerPage = "per_page"

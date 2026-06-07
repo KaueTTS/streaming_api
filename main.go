@@ -66,7 +66,8 @@ func run() error {
 		defer redisClient.Close()
 	}
 
-	if err := api.Init(db, redisClient); err != nil {
+	app := api.Init(db, redisClient)
+	if err := api.Listen(app); err != nil {
 		return fmt.Errorf("erro ao iniciar api: %w", err)
 	}
 

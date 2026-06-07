@@ -21,7 +21,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init(db *gorm.DB, redisClient *redis.Client) error {
+func Init(db *gorm.DB, redisClient *redis.Client) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName: env.AppName,
 	})
@@ -50,12 +50,7 @@ func Init(db *gorm.DB, redisClient *redis.Client) error {
 
 	injectRoutes(app, applicationContainer, limiterStorage)
 
-	port := fmt.Sprintf(":%s", env.Port)
-	if err := app.Listen(port); err != nil {
-		return fmt.Errorf("falha ao iniciar o servidor: %v", err)
-	}
-
-	return nil
+	return app
 }
 
 func injectRoutes(app *fiber.App, applicationContainer *container.Container, limiterStorage fiber.Storage) {
@@ -65,4 +60,8 @@ func injectRoutes(app *fiber.App, applicationContainer *container.Container, lim
 	route_auth.Init(app, applicationContainer.AuthController, limiterStorage)
 	route_content.Init(app, applicationContainer.ContentController)
 	route_profile.Init(app, applicationContainer.ProfileController)
+}
+
+func Listen(app *fiber.App) error {
+	return app.Listen(fmt.Sprintf(":%s", env.Port))
 }

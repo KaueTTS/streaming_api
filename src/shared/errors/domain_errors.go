@@ -7,6 +7,7 @@ import (
 	shared_errors_profile "github.com/KaueTTS/streaming_api/src/shared/errors/profile"
 )
 
+// Erros de domínio
 var (
 	ErrEmailAlreadyInUse   = errors.New(shared_errors_auth.EmailAlreadyInUse)
 	ErrInvalidCredentials  = errors.New(shared_errors_auth.ErrInvalidCredentials)

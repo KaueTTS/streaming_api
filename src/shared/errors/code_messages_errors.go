@@ -1,5 +1,6 @@
 package shared_errors
 
+// Códigos de erro
 const (
 	BadRequest          = "BAD_REQUEST"
 	InternalServerError = "INTERNAL_SERVER_ERROR"
