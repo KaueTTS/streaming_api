@@ -2,8 +2,8 @@ package v1_controller_profile
 
 import (
 	"errors"
-	"strconv"
 
+	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
 	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
@@ -17,12 +17,12 @@ import (
 )
 
 type ProfileController struct {
-	ProfileServiceInterface service_interface.ProfileServiceInterface
+	profileService service_interface.ProfileServiceInterface
 }
 
-func NewProfileController(profileServiceInterface service_interface.ProfileServiceInterface) *ProfileController {
+func NewProfileController(profileService service_interface.ProfileServiceInterface) *ProfileController {
 	return &ProfileController{
-		ProfileServiceInterface: profileServiceInterface,
+		profileService: profileService,
 	}
 }
 
@@ -39,8 +39,8 @@ func NewProfileController(profileServiceInterface service_interface.ProfileServi
 // @Router /v1/profiles [get]
 // @Security BearerAuth
 func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(uint)
-	if !ok || userID == 0 {
+	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
@@ -66,7 +66,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 
 	page, perPage := validator_profile.ValidatePagination(pagination)
 
-	response, err := c.ProfileServiceInterface.ListProfiles(ctx.UserContext(), userID, page, perPage)
+	response, err := c.profileService.ListProfiles(ctx.UserContext(), userID, page, perPage)
 	if err != nil {
 		return responses.InternalServerError(ctx, shared_errors_profile.FailedToListProfiles)
 	}
@@ -87,8 +87,8 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 // @Router /v1/profiles [post]
 // @Security BearerAuth
 func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(uint)
-	if !ok || userID == 0 {
+	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
@@ -115,7 +115,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.ProfileServiceInterface.CreateProfile(ctx.UserContext(), userID, request)
+	response, err := c.profileService.CreateProfile(ctx.UserContext(), userID, request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrProfileLimitReached) {
 			return responses.Conflict(ctx, shared_errors_profile.ProfileLimitReached)
@@ -141,14 +141,13 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 // @Router /v1/profiles/{id} [put]
 // @Security BearerAuth
 func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(uint)
-	if !ok || userID == 0 {
+	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	profileIDParam := ctx.Params("id")
-	profileID, err := strconv.ParseUint(profileIDParam, 10, 64)
-	if err != nil || profileID == 0 {
+	profileID, profileIDParam, ok := controllers_helpers.ParseUintParam(ctx, "id")
+	if !ok {
 		return responses.BadRequest(
 			ctx,
 			shared_errors_profile.InvalidProfileID,
@@ -185,7 +184,7 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.ProfileServiceInterface.UpdateProfile(ctx.UserContext(), userID, uint(profileID), request)
+	response, err := c.profileService.UpdateProfile(ctx.UserContext(), userID, uint(profileID), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
@@ -210,14 +209,13 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 // @Router /v1/profiles/{id} [delete]
 // @Security BearerAuth
 func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(uint)
-	if !ok || userID == 0 {
+	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	profileIDParam := ctx.Params("id")
-	profileID, err := strconv.ParseUint(profileIDParam, 10, 64)
-	if err != nil || profileID == 0 {
+	profileID, profileIDParam, ok := controllers_helpers.ParseUintParam(ctx, "id")
+	if !ok {
 		return responses.BadRequest(
 			ctx,
 			shared_errors_profile.InvalidProfileID,
@@ -231,7 +229,7 @@ func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if err := c.ProfileServiceInterface.DeleteProfile(ctx.UserContext(), userID, uint(profileID)); err != nil {
+	if err := c.profileService.DeleteProfile(ctx.UserContext(), userID, uint(profileID)); err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
 		}

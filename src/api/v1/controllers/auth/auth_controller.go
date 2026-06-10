@@ -3,6 +3,7 @@ package v1_controller_auth
 import (
 	"errors"
 
+	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
 	dto_auth "github.com/KaueTTS/streaming_api/src/api/v1/dto/auth"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
@@ -15,12 +16,12 @@ import (
 )
 
 type AuthController struct {
-	AuthServiceInterface service_interface.AuthServiceInterface
+	authService service_interface.AuthServiceInterface
 }
 
-func NewAuthController(authServiceInterface service_interface.AuthServiceInterface) *AuthController {
+func NewAuthController(authService service_interface.AuthServiceInterface) *AuthController {
 	return &AuthController{
-		AuthServiceInterface: authServiceInterface,
+		authService: authService,
 	}
 }
 
@@ -58,7 +59,7 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.AuthServiceInterface.Register(ctx.UserContext(), request)
+	response, err := c.authService.Register(ctx.UserContext(), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrEmailAlreadyInUse) {
 			return responses.Conflict(ctx, shared_errors_auth.EmailAlreadyInUse)
@@ -118,7 +119,7 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.AuthServiceInterface.Login(ctx.UserContext(), request)
+	response, err := c.authService.Login(ctx.UserContext(), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrInvalidCredentials) {
 			return responses.Unauthorized(ctx, shared_errors_auth.InvalidCredentials)
@@ -142,12 +143,12 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 // @Router /v1/auth/me [get]
 // @Security BearerAuth
 func (c *AuthController) Me(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(uint)
-	if !ok || userID == 0 {
+	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	response, err := c.AuthServiceInterface.Me(ctx.UserContext(), userID)
+	response, err := c.authService.Me(ctx.UserContext(), userID)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrUserNotFound) {
 			return responses.NotFound(ctx, shared_errors_auth.UserNotFound)

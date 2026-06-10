@@ -254,8 +254,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "502": {
+                        "description": "Bad Gateway",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
@@ -327,8 +327,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "502": {
+                        "description": "Bad Gateway",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }

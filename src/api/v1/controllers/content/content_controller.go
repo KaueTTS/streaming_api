@@ -6,19 +6,18 @@ import (
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
 	validator_content "github.com/KaueTTS/streaming_api/src/api/v1/validators"
 	service_interface "github.com/KaueTTS/streaming_api/src/services/interfaces"
-	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	shared_errors_content "github.com/KaueTTS/streaming_api/src/shared/errors/content"
 	"github.com/gofiber/fiber/v2"
 )
 
 type ContentController struct {
-	ContentServiceInterface service_interface.ContentServiceInterface
+	contentService service_interface.ContentServiceInterface
 }
 
-func NewContentController(contentServiceInterface service_interface.ContentServiceInterface) *ContentController {
+func NewContentController(contentService service_interface.ContentServiceInterface) *ContentController {
 	return &ContentController{
-		ContentServiceInterface: contentServiceInterface,
+		contentService: contentService,
 	}
 }
 
@@ -35,7 +34,7 @@ func NewContentController(contentServiceInterface service_interface.ContentServi
 // @Success 200 {object} dto_content.ContentResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
+// @Failure 502 {object} dto_shared.ErrorDto
 // @Router /v1/contents [get]
 // @Security BearerAuth
 func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
@@ -46,9 +45,9 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 			shared_errors.InvalidQueryParameters,
 			[]dto_shared.DetailErrorDto{
 				{
-					Field:   shared_constants.Page,
-					Value:   ctx.Query(shared_constants.Page),
-					Message: shared_errors.PageMustBePositive,
+					Field:   "",
+					Value:   "",
+					Message: shared_errors.InvalidQueryParameters,
 				},
 			},
 		)
@@ -62,7 +61,7 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.ContentServiceInterface.ListContents(ctx.UserContext(), request)
+	response, err := c.contentService.ListContents(ctx.UserContext(), request)
 	if err != nil {
 		return responses.BadGateway(ctx, shared_errors_content.FailedToListContents)
 	}
@@ -81,7 +80,7 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 // @Success 200 {object} dto_content.ContentResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
+// @Failure 502 {object} dto_shared.ErrorDto
 // @Router /v1/contents/search [get]
 // @Security BearerAuth
 func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
@@ -92,9 +91,9 @@ func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
 			shared_errors.InvalidQueryParameters,
 			[]dto_shared.DetailErrorDto{
 				{
-					Field:   shared_constants.Page,
-					Value:   ctx.Query(shared_constants.Page),
-					Message: shared_errors.PageMustBePositive,
+					Field:   "",
+					Value:   "",
+					Message: shared_errors.InvalidQueryParameters,
 				},
 			},
 		)
@@ -108,7 +107,7 @@ func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.ContentServiceInterface.SearchContents(ctx.UserContext(), request)
+	response, err := c.contentService.SearchContents(ctx.UserContext(), request)
 	if err != nil {
 		return responses.BadGateway(ctx, shared_errors_content.FailedToSearchContents)
 	}
