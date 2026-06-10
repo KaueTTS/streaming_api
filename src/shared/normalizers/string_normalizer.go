@@ -6,8 +6,3 @@ import "strings"
 func NormalizeString(value string) string {
 	return strings.ToLower(strings.TrimSpace(value))
 }
-
-// TrimString remove espaços em branco no início e no final de uma string.
-func TrimString(value string) string {
-	return strings.TrimSpace(value)
-}

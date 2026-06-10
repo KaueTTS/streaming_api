@@ -3,6 +3,7 @@ package validator
 import (
 	"regexp"
 	"strconv"
+	"strings"
 
 	dto_content "github.com/KaueTTS/streaming_api/src/api/v1/dto/content"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
@@ -67,7 +68,7 @@ func ValidateContentListRequest(request dto_content.ContentListRequestDto) []dto
 func ValidateContentSearchRequest(request dto_content.ContentSearchRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 
-	query := shared_normalizers.TrimString(request.Query)
+	query := strings.TrimSpace(request.Query)
 	if query == "" {
 		details = append(details, NewDetail(shared_constants.Query, request.Query, shared_errors_content.SearchQueryRequired))
 	}
@@ -129,7 +130,7 @@ func validateContentSortBy(contentType string, sortBy string) []dto_shared.Detai
 }
 
 func validateContentGenres(withGenres string) []dto_shared.DetailErrorDto {
-	normalizedGenres := shared_normalizers.TrimString(withGenres)
+	normalizedGenres := strings.TrimSpace(withGenres)
 	if normalizedGenres == "" {
 		return nil
 	}
@@ -144,7 +145,7 @@ func validateContentGenres(withGenres string) []dto_shared.DetailErrorDto {
 }
 
 func validateContentLanguage(language string) []dto_shared.DetailErrorDto {
-	normalizedLanguage := shared_normalizers.TrimString(language)
+	normalizedLanguage := strings.TrimSpace(language)
 	if normalizedLanguage == "" {
 		return nil
 	}

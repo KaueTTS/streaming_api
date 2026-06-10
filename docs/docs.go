@@ -343,6 +343,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Retorna uma lista paginada dos perfis associados ao usuário autenticado.",
                 "tags": [
                     "profiles"
                 ],
@@ -396,6 +397,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Cria um novo perfil associado ao usuário autenticado.",
                 "tags": [
                     "profiles"
                 ],
@@ -452,6 +454,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Atualiza os dados de um perfil específico associado ao usuário autenticado.",
                 "tags": [
                     "profiles"
                 ],
@@ -513,6 +516,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Remove um perfil específico associado ao usuário autenticado.",
                 "tags": [
                     "profiles"
                 ],

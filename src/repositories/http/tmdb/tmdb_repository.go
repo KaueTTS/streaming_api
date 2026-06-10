@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
 	dto "github.com/KaueTTS/streaming_api/src/repositories/http/tmdb/dto"
 	shared_constants_content "github.com/KaueTTS/streaming_api/src/shared/constants/content"
-	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -84,7 +84,7 @@ func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentLi
 func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.ContentSearchFiltersDto) (dto.GetContentResponseDto, error) {
 	baseURL := fmt.Sprintf("%s/search/%s", r.baseURL, filters.Type)
 	queryParams := url.Values{}
-	queryParams.Set("query", shared_normalizers.TrimString(filters.Query))
+	queryParams.Set("query", strings.TrimSpace(filters.Query))
 	addQueryParam(queryParams, "language", filters.Language)
 
 	if filters.Page > 0 {

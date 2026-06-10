@@ -28,7 +28,7 @@ func NewProfileController(profileServiceInterface service_interface.ProfileServi
 
 // ListProfiles godoc
 // @Summary Listar os perfis do usuário logado
-// @Description
+// @Description Retorna uma lista paginada dos perfis associados ao usuário autenticado.
 // @Param page query int false "Número da página" default(1)
 // @Param per_page query int false "Número de itens por página" default(10)
 // @Tags profiles
@@ -76,7 +76,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 
 // CreateProfile godoc
 // @Summary Criar um novo perfil para o usuário logado
-// @Description
+// @Description Cria um novo perfil associado ao usuário autenticado.
 // @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
 // @Tags profiles
 // @Success 201 {object} dto_profile.ProfileDto
@@ -129,7 +129,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 
 // UpdateProfile godoc
 // @Summary Atualizar um perfil já cadastrado para o usuário logado
-// @Description
+// @Description Atualiza os dados de um perfil específico associado ao usuário autenticado.
 // @Param id path int true "ID do perfil"
 // @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um pefil"
 // @Tags profiles
@@ -199,7 +199,7 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 
 // DeleteProfile godoc
 // @Summary Remover um perfil do usuário logado
-// @Description
+// @Description Remove um perfil específico associado ao usuário autenticado.
 // @Param id path int true "ID do perfil"
 // @Tags profiles
 // @Success 204

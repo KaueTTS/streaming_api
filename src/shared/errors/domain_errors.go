@@ -7,7 +7,7 @@ import (
 	shared_errors_profile "github.com/KaueTTS/streaming_api/src/shared/errors/profile"
 )
 
-// Erros de domínio
+// Erros de domínio geral
 var (
 	ErrEmailAlreadyInUse   = errors.New(shared_errors_auth.EmailAlreadyInUse)
 	ErrInvalidCredentials  = errors.New(shared_errors_auth.ErrInvalidCredentials)
@@ -15,7 +15,10 @@ var (
 	ErrProfileLimitReached = errors.New(shared_errors_profile.ProfileLimitReached)
 	ErrProfileNotFound     = errors.New(shared_errors_profile.ProfileNotFound)
 	ErrUserNotFound        = errors.New(shared_errors_auth.UserNotFound)
+)
 
+// Erros de domínio relacionados a validação de senha
+var (
 	ErrPasswordMustLeast8Character   = errors.New(shared_errors_auth.PasswordMustLeast8Character)
 	ErrPasswordMustMaximum72Bytes    = errors.New(shared_errors_auth.PasswordMustMaximum72Bytes)
 	ErrPasswordMustLettersAndNumbers = errors.New(shared_errors_auth.PasswordMustLettersAndNumbers)

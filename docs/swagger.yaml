@@ -369,6 +369,7 @@ paths:
       - contents
   /v1/profiles:
     get:
+      description: Retorna uma lista paginada dos perfis associados ao usuário autenticado.
       parameters:
       - default: 1
         description: Número da página
@@ -403,6 +404,7 @@ paths:
       tags:
       - profiles
     post:
+      description: Cria um novo perfil associado ao usuário autenticado.
       parameters:
       - description: Dados para criar um perfil
         in: body
@@ -438,6 +440,7 @@ paths:
       - profiles
   /v1/profiles/{id}:
     delete:
+      description: Remove um perfil específico associado ao usuário autenticado.
       parameters:
       - description: ID do perfil
         in: path
@@ -469,6 +472,8 @@ paths:
       tags:
       - profiles
     put:
+      description: Atualiza os dados de um perfil específico associado ao usuário
+        autenticado.
       parameters:
       - description: ID do perfil
         in: path

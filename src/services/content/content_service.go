@@ -2,6 +2,7 @@ package service_content
 
 import (
 	"context"
+	"strings"
 
 	dto_content "github.com/KaueTTS/streaming_api/src/api/v1/dto/content"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
@@ -25,8 +26,8 @@ func (s *ContentService) ListContents(ctx context.Context, request dto_content.C
 		Type:       shared_normalizers.NormalizeString(request.Type),
 		Page:       shared_normalizers.NormalizePage(request.Page),
 		SortBy:     shared_normalizers.NormalizeString(request.SortBy),
-		WithGenres: shared_normalizers.TrimString(request.WithGenres),
-		Language:   shared_normalizers.TrimString(request.Language),
+		WithGenres: strings.TrimSpace(request.WithGenres),
+		Language:   strings.TrimSpace(request.Language),
 		Year:       request.Year,
 	}
 
@@ -42,8 +43,8 @@ func (s *ContentService) SearchContents(ctx context.Context, request dto_content
 	filters := tmdb_dto.ContentSearchFiltersDto{
 		Type:     shared_normalizers.NormalizeString(request.Type),
 		Page:     shared_normalizers.NormalizePage(request.Page),
-		Language: shared_normalizers.TrimString(request.Language),
-		Query:    shared_normalizers.TrimString(request.Query),
+		Language: strings.TrimSpace(request.Language),
+		Query:    strings.TrimSpace(request.Query),
 	}
 
 	response, err := s.TMDBRepositoryInterface.SearchContents(ctx, filters)

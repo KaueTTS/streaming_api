@@ -11,6 +11,7 @@ import (
 	security "github.com/KaueTTS/streaming_api/src/security"
 	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +27,7 @@ func NewAuthService(authRepositoryInterface repository_interface.AuthRepositoryI
 
 func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterRequestDto) (dto_auth.UserResponseDto, error) {
 	name := strings.TrimSpace(request.Name)
-	email := strings.ToLower(strings.TrimSpace(request.Email))
+	email := shared_normalizers.NormalizeString(request.Email)
 
 	if err := security.Validate(request.Password); err != nil {
 		return dto_auth.UserResponseDto{}, shared_errors.ErrInvalidPassword
@@ -72,7 +73,7 @@ func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterReq
 }
 
 func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDto) (dto_auth.AuthResponseDto, error) {
-	email := strings.ToLower(strings.TrimSpace(request.Email))
+	email := shared_normalizers.NormalizeString(request.Email)
 
 	user, err := s.AuthRepositoryInterface.FindByEmail(ctx, email)
 	if err != nil {
@@ -128,6 +129,6 @@ func (s *AuthService) Me(ctx context.Context, userID uint) (dto_auth.UserRespons
 }
 
 func isUniqueConstraintError(err error) bool {
-	message := strings.ToLower(err.Error())
+	message := shared_normalizers.NormalizeString(err.Error())
 	return strings.Contains(message, "unique") && strings.Contains(message, "email")
 }

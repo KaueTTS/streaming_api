@@ -2,6 +2,7 @@ package validator
 
 import (
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
+	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 )
 
 func NewDetail(field string, value string, message string) dto_shared.DetailErrorDto {
@@ -13,15 +14,8 @@ func NewDetail(field string, value string, message string) dto_shared.DetailErro
 }
 
 func ValidatePagination(pagination dto_shared.PaginationDto) (page int, perPage int) {
-	if pagination.Page <= 0 {
-		pagination.Page = 1
-	}
+	page = shared_normalizers.NormalizePage(pagination.Page)
+	perPage = shared_normalizers.NormalizePerPage(pagination.PerPage)
 
-	if pagination.PerPage <= 0 {
-		pagination.PerPage = 10
-	} else if pagination.PerPage > 100 {
-		pagination.PerPage = 100
-	}
-
-	return pagination.Page, pagination.PerPage
+	return page, perPage
 }

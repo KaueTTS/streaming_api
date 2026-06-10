@@ -64,7 +64,7 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 
 	response, err := c.ContentServiceInterface.ListContents(ctx.UserContext(), request)
 	if err != nil {
-		return responses.InternalServerError(ctx, shared_errors_content.FailedToListContents)
+		return responses.BadGateway(ctx, shared_errors_content.FailedToListContents)
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
@@ -110,7 +110,7 @@ func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
 
 	response, err := c.ContentServiceInterface.SearchContents(ctx.UserContext(), request)
 	if err != nil {
-		return responses.InternalServerError(ctx, shared_errors_content.FailedToSearchContents)
+		return responses.BadGateway(ctx, shared_errors_content.FailedToSearchContents)
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)

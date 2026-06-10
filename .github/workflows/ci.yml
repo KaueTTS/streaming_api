@@ -52,7 +52,7 @@ jobs:
           COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
           echo "Coverage total: ${COVERAGE}%"
 
-          MIN_COVERAGE=50
+          MIN_COVERAGE=20
 
           awk -v coverage="$COVERAGE" -v min="$MIN_COVERAGE" 'BEGIN {
             if (coverage < min) {

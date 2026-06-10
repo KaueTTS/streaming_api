@@ -6,7 +6,6 @@ import (
 	"time"
 
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
-	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -18,7 +17,7 @@ type Claims struct {
 }
 
 func GenerateToken(userID uint, email, role string) (string, error) {
-	secret := shared_normalizers.TrimString(env.JWTSecret)
+	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
 		return "", errors.New("JWT_SECRET não informado")
 	}
@@ -43,7 +42,7 @@ func GenerateToken(userID uint, email, role string) (string, error) {
 }
 
 func ValidateToken(tokenString string) (*Claims, error) {
-	secret := shared_normalizers.TrimString(env.JWTSecret)
+	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
 		return nil, errors.New("JWT_SECRET não informado")
 	}
@@ -65,7 +64,7 @@ func ValidateToken(tokenString string) (*Claims, error) {
 		return nil, errors.New("token inválido")
 	}
 
-	if claims.UserID == 0 || shared_normalizers.TrimString(claims.Email) == "" {
+	if claims.UserID == 0 || strings.TrimSpace(claims.Email) == "" {
 		return nil, errors.New("claims do token inválidas")
 	}
 
@@ -73,7 +72,7 @@ func ValidateToken(tokenString string) (*Claims, error) {
 }
 
 func ExtractBearerToken(authorizationHeader string) (string, error) {
-	authorizationHeader = shared_normalizers.TrimString(authorizationHeader)
+	authorizationHeader = strings.TrimSpace(authorizationHeader)
 	if authorizationHeader == "" {
 		return "", errors.New("header Authorization não informado")
 	}
@@ -83,7 +82,7 @@ func ExtractBearerToken(authorizationHeader string) (string, error) {
 		return "", errors.New("header Authorization deve estar no formato Bearer token")
 	}
 
-	token := shared_normalizers.TrimString(parts[1])
+	token := strings.TrimSpace(parts[1])
 	if token == "" {
 		return "", errors.New("token não informado")
 	}
