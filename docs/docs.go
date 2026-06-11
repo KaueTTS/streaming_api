@@ -45,7 +45,7 @@ const docTemplate = `{
             "post": {
                 "description": "Autentica um usuário com e-mail e senha e retorna o token de acesso",
                 "tags": [
-                    "authorization"
+                    "auth"
                 ],
                 "summary": "Realiza login do usuário",
                 "parameters": [
@@ -96,7 +96,7 @@ const docTemplate = `{
                 ],
                 "description": "Retorna os dados do usuário autenticado com base no token enviado no header Authorization",
                 "tags": [
-                    "authorization"
+                    "auth"
                 ],
                 "summary": "Busca o usuário autenticado",
                 "responses": {
@@ -137,7 +137,7 @@ const docTemplate = `{
             "post": {
                 "description": "Cria uma nova conta de usuário no sistema",
                 "tags": [
-                    "authorization"
+                    "auth"
                 ],
                 "summary": "Registra um novo usuário",
                 "parameters": [
@@ -468,7 +468,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Dados para atualizar um pefil",
+                        "description": "Dados para atualizar um perfil",
                         "name": "request",
                         "in": "body",
                         "required": true,

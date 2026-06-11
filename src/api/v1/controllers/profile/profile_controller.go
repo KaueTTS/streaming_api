@@ -93,19 +93,9 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	var request dto_profile.ProfileRequestDto
-	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidRequestBody,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: err.Error(),
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseBody[dto_profile.ProfileRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
 	}
 
 	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
@@ -132,7 +122,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 // @Summary Atualizar um perfil já cadastrado para o usuário logado
 // @Description Atualiza os dados de um perfil específico associado ao usuário autenticado.
 // @Param id path int true "ID do perfil"
-// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um pefil"
+// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um perfil"
 // @Tags profiles
 // @Success 200 {object} dto_profile.ProfileDto
 // @Failure 400 {object} dto_shared.ErrorDto
@@ -162,19 +152,9 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	var request dto_profile.ProfileRequestDto
-	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidRequestBody,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: err.Error(),
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseBody[dto_profile.ProfileRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
 	}
 
 	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {

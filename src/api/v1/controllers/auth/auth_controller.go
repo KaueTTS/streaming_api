@@ -28,7 +28,7 @@ func NewAuthController(authService service_interface.AuthServiceInterface) *Auth
 // Register godoc
 // @Summary Registra um novo usuário
 // @Description Cria uma nova conta de usuário no sistema
-// @Tags authorization
+// @Tags auth
 // @Param request body dto_auth.RegisterRequestDto true "Dados para registrar o usuário"
 // @Success 201 {object} dto_auth.UserResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
@@ -36,19 +36,9 @@ func NewAuthController(authService service_interface.AuthServiceInterface) *Auth
 // @Failure 500 {object} dto_shared.ErrorDto
 // @Router /v1/auth/register [post]
 func (c *AuthController) Register(ctx *fiber.Ctx) error {
-	var request dto_auth.RegisterRequestDto
-	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidRequestBody,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: err.Error(),
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseBody[dto_auth.RegisterRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
 	}
 
 	if errDetails := validator_auth.ValidateRegisterRequest(request); len(errDetails) > 0 {
@@ -88,7 +78,7 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 // Login godoc
 // @Summary Realiza login do usuário
 // @Description Autentica um usuário com e-mail e senha e retorna o token de acesso
-// @Tags authorization
+// @Tags auth
 // @Param request body dto_auth.LoginRequestDto true "Dados para autenticação"
 // @Success 200 {object} dto_auth.AuthResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
@@ -96,19 +86,9 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 // @Failure 500 {object} dto_shared.ErrorDto
 // @Router /v1/auth/login [post]
 func (c *AuthController) Login(ctx *fiber.Ctx) error {
-	var request dto_auth.LoginRequestDto
-	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidRequestBody,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: err.Error(),
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseBody[dto_auth.LoginRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
 	}
 
 	if errDetails := validator_auth.ValidateLoginRequest(request); len(errDetails) > 0 {
@@ -134,7 +114,7 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 // Me godoc
 // @Summary Busca o usuário autenticado
 // @Description Retorna os dados do usuário autenticado com base no token enviado no header Authorization
-// @Tags authorization
+// @Tags auth
 // @Success 200 {object} dto_auth.UserResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto

@@ -203,7 +203,7 @@ paths:
             $ref: '#/definitions/dto_shared.ErrorDto'
       summary: Realiza login do usuário
       tags:
-      - authorization
+      - auth
   /v1/auth/me:
     get:
       description: Retorna os dados do usuário autenticado com base no token enviado
@@ -233,7 +233,7 @@ paths:
       - BearerAuth: []
       summary: Busca o usuário autenticado
       tags:
-      - authorization
+      - auth
   /v1/auth/register:
     post:
       description: Cria uma nova conta de usuário no sistema
@@ -263,7 +263,7 @@ paths:
             $ref: '#/definitions/dto_shared.ErrorDto'
       summary: Registra um novo usuário
       tags:
-      - authorization
+      - auth
   /v1/contents:
     get:
       description: Lista filmes ou séries usando a integração com a TMDB API
@@ -480,7 +480,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Dados para atualizar um pefil
+      - description: Dados para atualizar um perfil
         in: body
         name: request
         required: true
