@@ -143,7 +143,7 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 // @Router /v1/auth/me [get]
 // @Security BearerAuth
 func (c *AuthController) Me(ctx *fiber.Ctx) error {
-	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}

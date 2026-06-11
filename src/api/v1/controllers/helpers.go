@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetAuthenticatedUserId(ctx *fiber.Ctx) (uint, bool) {
+func GetAuthenticatedUserID(ctx *fiber.Ctx) (uint, bool) {
 	userID, ok := ctx.Locals("user_id").(uint)
 	return userID, ok && userID > 0
 }

@@ -13,6 +13,7 @@ import (
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 	shared_errors_profile "github.com/KaueTTS/streaming_api/src/shared/errors/profile"
+	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -39,7 +40,7 @@ func NewProfileController(profileService service_interface.ProfileServiceInterfa
 // @Router /v1/profiles [get]
 // @Security BearerAuth
 func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
-	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
@@ -64,7 +65,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 		)
 	}
 
-	page, perPage := validator_profile.ValidatePagination(pagination)
+	page, perPage := shared_normalizers.NormalizePagination(pagination)
 
 	response, err := c.profileService.ListProfiles(ctx.UserContext(), userID, page, perPage)
 	if err != nil {
@@ -87,7 +88,7 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 // @Router /v1/profiles [post]
 // @Security BearerAuth
 func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
-	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
@@ -141,7 +142,7 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 // @Router /v1/profiles/{id} [put]
 // @Security BearerAuth
 func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
-	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
@@ -184,7 +185,7 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.profileService.UpdateProfile(ctx.UserContext(), userID, uint(profileID), request)
+	response, err := c.profileService.UpdateProfile(ctx.UserContext(), userID, profileID, request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
@@ -209,7 +210,7 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 // @Router /v1/profiles/{id} [delete]
 // @Security BearerAuth
 func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
-	userID, ok := controllers_helpers.GetAuthenticatedUserId(ctx)
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
@@ -229,7 +230,7 @@ func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if err := c.profileService.DeleteProfile(ctx.UserContext(), userID, uint(profileID)); err != nil {
+	if err := c.profileService.DeleteProfile(ctx.UserContext(), userID, profileID); err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
 		}
