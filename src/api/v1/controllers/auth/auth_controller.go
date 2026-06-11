@@ -3,22 +3,25 @@ package v1_controller_auth
 import (
 	"errors"
 
+	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
 	dto_auth "github.com/KaueTTS/streaming_api/src/api/v1/dto/auth"
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
 	validator_auth "github.com/KaueTTS/streaming_api/src/api/v1/validators"
 	service_interface "github.com/KaueTTS/streaming_api/src/services/interfaces"
+	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 	"github.com/gofiber/fiber/v2"
 )
 
 type AuthController struct {
-	AuthServiceInterface service_interface.AuthServiceInterface
+	authService service_interface.AuthServiceInterface
 }
 
-func NewAuthController(authServiceInterface service_interface.AuthServiceInterface) *AuthController {
+func NewAuthController(authService service_interface.AuthServiceInterface) *AuthController {
 	return &AuthController{
-		AuthServiceInterface: authServiceInterface,
+		authService: authService,
 	}
 }
 
@@ -48,24 +51,38 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 		)
 	}
 
-	if details := validator_auth.ValidateRegisterRequest(request); len(details) > 0 {
-		return responses.BadRequest(ctx, shared_errors.InvalidRegisterData, details)
+	if errDetails := validator_auth.ValidateRegisterRequest(request); len(errDetails) > 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_auth.InvalidRegisterData,
+			errDetails,
+		)
 	}
 
-	user, err := c.AuthServiceInterface.Register(ctx.Context(), request)
+	response, err := c.authService.Register(ctx.UserContext(), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrEmailAlreadyInUse) {
-			return responses.Conflict(ctx, shared_errors.EmailAlreadyInUse)
+			return responses.Conflict(ctx, shared_errors_auth.EmailAlreadyInUse)
 		}
 
 		if errors.Is(err, shared_errors.ErrInvalidPassword) {
-			return responses.BadRequest(ctx, shared_errors.InvalidPassword, nil)
+			return responses.BadRequest(
+				ctx,
+				shared_errors_auth.InvalidPassword,
+				[]dto_shared.DetailErrorDto{
+					{
+						Field:   shared_constants.Password,
+						Value:   shared_constants.Hidden,
+						Message: shared_errors_auth.InvalidPassword,
+					},
+				},
+			)
 		}
 
-		return responses.InternalServerError(ctx, shared_errors.FailedToRegisterUser)
+		return responses.InternalServerError(ctx, shared_errors_auth.FailedToRegisterUser)
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(user)
+	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
 // Login godoc
@@ -81,20 +98,34 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 func (c *AuthController) Login(ctx *fiber.Ctx) error {
 	var request dto_auth.LoginRequestDto
 	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, nil)
+		return responses.BadRequest(
+			ctx,
+			shared_errors.InvalidRequestBody,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   "",
+					Value:   "",
+					Message: err.Error(),
+				},
+			},
+		)
 	}
 
-	if details := validator_auth.ValidateLoginRequest(request); len(details) > 0 {
-		return responses.BadRequest(ctx, shared_errors.InvalidLoginData, details)
+	if errDetails := validator_auth.ValidateLoginRequest(request); len(errDetails) > 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_auth.InvalidLoginData,
+			errDetails,
+		)
 	}
 
-	response, err := c.AuthServiceInterface.Login(ctx.Context(), request)
+	response, err := c.authService.Login(ctx.UserContext(), request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrInvalidCredentials) {
-			return responses.Unauthorized(ctx, shared_errors.InvalidCredentials)
+			return responses.Unauthorized(ctx, shared_errors_auth.InvalidCredentials)
 		}
 
-		return responses.InternalServerError(ctx, shared_errors.FailedToLogin)
+		return responses.InternalServerError(ctx, shared_errors_auth.FailedToLogin)
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
@@ -112,19 +143,19 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 // @Router /v1/auth/me [get]
 // @Security BearerAuth
 func (c *AuthController) Me(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(uint)
-	if !ok || userID == 0 {
-		return responses.Unauthorized(ctx, shared_errors.InvalidToken)
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	user, err := c.AuthServiceInterface.Me(ctx.Context(), userID)
+	response, err := c.authService.Me(ctx.UserContext(), userID)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrUserNotFound) {
-			return responses.NotFound(ctx, shared_errors.UserNotFound)
+			return responses.NotFound(ctx, shared_errors_auth.UserNotFound)
 		}
 
-		return responses.InternalServerError(ctx, shared_errors.FailedToGetAuthenticatedUser)
+		return responses.InternalServerError(ctx, shared_errors_auth.FailedToGetAuthenticatedUser)
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(user)
+	return ctx.Status(fiber.StatusOK).JSON(response)
 }

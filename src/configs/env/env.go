@@ -12,15 +12,17 @@ var (
 	Port                           string
 	AppEnv                         string
 	AppName                        string
+	OTLPExporterEndpoint           string
+	JWTSecret                      string
 	SQLiteDatabaseURL              string
 	RedisHost                      string
+	RedisPort                      string
 	RedisUsername                  string
 	RedisPassword                  string
+	RedisDatabase                  int
 	AuthTokenExpirationTimeInHours float64
-	DDAppSec                       bool
-	DDWithLogStartup               bool
-	TmdbApiURL                     string
-	JWTSecret                      string
+	TMDBBaseURL                    string
+	TMDBAccessToken                string
 )
 
 func Init() error {
@@ -41,31 +43,39 @@ func Init() error {
 		AppName = "streaming_api"
 	}
 
+	OTLPExporterEndpoint = os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	if OTLPExporterEndpoint == "" {
+		OTLPExporterEndpoint = "localhost:4318"
+	}
+
+	JWTSecret = os.Getenv("JWT_SECRET")
+	if JWTSecret == "" {
+		return fmt.Errorf("a variável de ambiente JWT_SECRET precisa ser informada")
+	}
+
 	SQLiteDatabaseURL = os.Getenv("SQLITE_DATABASE_URL")
 	if SQLiteDatabaseURL == "" {
 		return fmt.Errorf("a variável de ambiente SQLITE_DATABASE_URL precisa ser informada")
 	}
 
 	RedisHost = os.Getenv("REDIS_HOST")
-	// if RedisHost == "" {
-	// 	return fmt.Errorf("a variável de ambiente REDIS_HOST precisa ser informada")
-	// }
+
+	RedisPort = os.Getenv("REDIS_PORT")
+	if RedisPort == "" {
+		RedisPort = "6379"
+	}
 
 	RedisUsername = os.Getenv("REDIS_USERNAME")
-	// if RedisUsername == "" {
-	// 	return fmt.Errorf("a variável de ambiente REDIS_USERNAME precisa ser informada")
-	// }
-
 	RedisPassword = os.Getenv("REDIS_PASSWORD")
-	// if RedisPassword == "" {
-	// 	return fmt.Errorf("a variável de ambiente REDIS_PASSWORD precisa ser informada")
-	// }
 
-	TmdbApiURL = os.Getenv("TMDB_API_URL")
+	RedisDatabase = 0
+	if value := os.Getenv("REDIS_DATABASE"); value != "" {
+		parsedValue, err := strconv.Atoi(value)
+		if err != nil || parsedValue < 0 {
+			return fmt.Errorf("REDIS_DATABASE precisa ser um número maior ou igual a zero")
+		}
 
-	JWTSecret = os.Getenv("JWT_SECRET")
-	if JWTSecret == "" {
-		return fmt.Errorf("a variável de ambiente JWT_SECRET precisa ser informada")
+		RedisDatabase = parsedValue
 	}
 
 	AuthTokenExpirationTimeInHours = 8
@@ -76,6 +86,16 @@ func Init() error {
 		}
 
 		AuthTokenExpirationTimeInHours = parsedValue
+	}
+
+	TMDBBaseURL = os.Getenv("TMDB_BASE_URL")
+	if TMDBBaseURL == "" {
+		return fmt.Errorf("a variável de ambiente TMDB_BASE_URL precisa ser informada")
+	}
+
+	TMDBAccessToken = os.Getenv("TMDB_ACCESS_TOKEN")
+	if TMDBAccessToken == "" {
+		return fmt.Errorf("a variável de ambiente TMDB_ACCESS_TOKEN precisa ser informada")
 	}
 
 	return nil

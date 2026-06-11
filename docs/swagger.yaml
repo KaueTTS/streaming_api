@@ -39,8 +39,85 @@ definitions:
         type: integer
       name:
         type: string
+      role:
+        type: string
       updated_at:
         type: string
+    type: object
+  dto_content.ContentDto:
+    properties:
+      backdrop_path:
+        type: string
+      description:
+        type: string
+      external_id:
+        type: integer
+      genre_ids:
+        items:
+          type: integer
+        type: array
+      original_language:
+        type: string
+      original_title:
+        type: string
+      popularity:
+        type: number
+      poster_path:
+        type: string
+      release_date:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      vote_average:
+        type: number
+      vote_count:
+        type: integer
+    type: object
+  dto_content.ContentResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto_content.ContentDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto_shared.PaginationDto'
+    type: object
+  dto_profile.ProfileDto:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_kids:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto_profile.ProfileRequestDto:
+    properties:
+      avatar_url:
+        type: string
+      is_kids:
+        type: boolean
+      name:
+        type: string
+    type: object
+  dto_profile.ProfileResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto_profile.ProfileDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto_shared.PaginationDto'
     type: object
   dto_shared.DetailErrorDto:
     properties:
@@ -61,6 +138,17 @@ definitions:
         type: array
       message:
         type: string
+    type: object
+  dto_shared.PaginationDto:
+    properties:
+      page:
+        type: integer
+      pageCount:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
     type: object
   route_health.Health:
     properties:
@@ -85,7 +173,7 @@ paths:
             $ref: '#/definitions/route_health.Health'
       summary: Verifica se a API está online
       tags:
-      - Health
+      - health
   /v1/auth/login:
     post:
       description: Autentica um usuário com e-mail e senha e retorna o token de acesso
@@ -176,6 +264,254 @@ paths:
       summary: Registra um novo usuário
       tags:
       - authorization
+  /v1/contents:
+    get:
+      description: Lista filmes ou séries usando a integração com a TMDB API
+      parameters:
+      - description: Tipo do conteúdo
+        enum:
+        - movie
+        - tv
+        in: query
+        name: type
+        required: true
+        type: string
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - description: 'Ordenação usada pela TMDB. Exemplo: popularity.desc'
+        in: query
+        name: sort_by
+        type: string
+      - description: IDs de gêneros separados por vírgula
+        in: query
+        name: with_genres
+        type: string
+      - description: 'Idioma da resposta. Exemplo: pt-BR'
+        in: query
+        name: language
+        type: string
+      - description: Ano de lançamento
+        in: query
+        name: year
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_content.ContentResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Listar conteúdos
+      tags:
+      - contents
+  /v1/contents/search:
+    get:
+      description: Busca filmes ou séries usando a integração com a TMDB API
+      parameters:
+      - description: Tipo do conteúdo
+        enum:
+        - movie
+        - tv
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: Termo pesquisado
+        in: query
+        name: query
+        required: true
+        type: string
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - description: 'Idioma da resposta. Exemplo: pt-BR'
+        in: query
+        name: language
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_content.ContentResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Buscar conteúdos
+      tags:
+      - contents
+  /v1/profiles:
+    get:
+      description: Retorna uma lista paginada dos perfis associados ao usuário autenticado.
+      parameters:
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Número de itens por página
+        in: query
+        name: per_page
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_profile.ProfileResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Listar os perfis do usuário logado
+      tags:
+      - profiles
+    post:
+      description: Cria um novo perfil associado ao usuário autenticado.
+      parameters:
+      - description: Dados para criar um perfil
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto_profile.ProfileRequestDto'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto_profile.ProfileDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Criar um novo perfil para o usuário logado
+      tags:
+      - profiles
+  /v1/profiles/{id}:
+    delete:
+      description: Remove um perfil específico associado ao usuário autenticado.
+      parameters:
+      - description: ID do perfil
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Remover um perfil do usuário logado
+      tags:
+      - profiles
+    put:
+      description: Atualiza os dados de um perfil específico associado ao usuário
+        autenticado.
+      parameters:
+      - description: ID do perfil
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados para atualizar um pefil
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto_profile.ProfileRequestDto'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_profile.ProfileDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Atualizar um perfil já cadastrado para o usuário logado
+      tags:
+      - profiles
 produces:
 - application/json
 schemes:

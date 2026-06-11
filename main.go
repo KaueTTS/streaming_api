@@ -1,13 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	_ "github.com/KaueTTS/streaming_api/docs"
 	api "github.com/KaueTTS/streaming_api/src/api"
+	redis_conn "github.com/KaueTTS/streaming_api/src/configs/db/redis"
 	sqlite_conn "github.com/KaueTTS/streaming_api/src/configs/db/sqlite"
 	env "github.com/KaueTTS/streaming_api/src/configs/env"
+	tracing "github.com/KaueTTS/streaming_api/src/configs/tracing"
 )
 
 // @title Streaming API
@@ -38,12 +41,33 @@ func run() error {
 		return fmt.Errorf("erro ao inicializar variáveis de ambiente: %w", err)
 	}
 
+	ctx := context.Background()
+	tracerProvider, err := tracing.Init(ctx)
+	if err != nil {
+		return fmt.Errorf("erro ao inicializar tracing: %w", err)
+	}
+	defer func() {
+		if err := tracerProvider.Shutdown(ctx); err != nil {
+			log.Printf("erro ao finalizar tracing: %v", err)
+		}
+	}()
+
 	db, err := sqlite_conn.Init()
 	if err != nil {
 		return fmt.Errorf("erro ao inicializar sqlite: %w", err)
 	}
 
-	if err := api.Init(db); err != nil {
+	redisClient, err := redis_conn.Init(ctx)
+	if err != nil {
+		log.Printf("Redis indisponível, usando fallback em memória: %v", err)
+		redisClient = nil
+	}
+	if redisClient != nil {
+		defer redisClient.Close()
+	}
+
+	app := api.Init(db, redisClient)
+	if err := api.Listen(app); err != nil {
 		return fmt.Errorf("erro ao iniciar api: %w", err)
 	}
 

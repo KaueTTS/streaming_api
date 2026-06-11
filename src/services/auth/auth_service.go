@@ -9,7 +9,9 @@ import (
 	models "github.com/KaueTTS/streaming_api/src/models"
 	repository_interface "github.com/KaueTTS/streaming_api/src/repositories/interfaces"
 	security "github.com/KaueTTS/streaming_api/src/security"
+	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +27,7 @@ func NewAuthService(authRepositoryInterface repository_interface.AuthRepositoryI
 
 func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterRequestDto) (dto_auth.UserResponseDto, error) {
 	name := strings.TrimSpace(request.Name)
-	email := normalizeEmail(request.Email)
+	email := shared_normalizers.NormalizeString(request.Email)
 
 	if err := security.Validate(request.Password); err != nil {
 		return dto_auth.UserResponseDto{}, shared_errors.ErrInvalidPassword
@@ -49,6 +51,7 @@ func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterReq
 		Name:         name,
 		Email:        email,
 		PasswordHash: passwordHash,
+		Role:         shared_constants.RoleUser,
 	}
 
 	if err := s.AuthRepositoryInterface.Create(ctx, user); err != nil {
@@ -59,11 +62,18 @@ func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterReq
 		return dto_auth.UserResponseDto{}, err
 	}
 
-	return toUserResponseDto(*user), nil
+	return dto_auth.UserResponseDto{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}, nil
 }
 
 func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDto) (dto_auth.AuthResponseDto, error) {
-	email := normalizeEmail(request.Email)
+	email := shared_normalizers.NormalizeString(request.Email)
 
 	user, err := s.AuthRepositoryInterface.FindByEmail(ctx, email)
 	if err != nil {
@@ -78,7 +88,7 @@ func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDt
 		return dto_auth.AuthResponseDto{}, shared_errors.ErrInvalidCredentials
 	}
 
-	token, err := security.GenerateToken(user.ID, user.Email)
+	token, err := security.GenerateToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return dto_auth.AuthResponseDto{}, err
 	}
@@ -87,7 +97,14 @@ func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDt
 		Token:     token,
 		TokenType: "Bearer",
 		ExpiresIn: int64(security.GetExpirationDuration().Seconds()),
-		User:      toUserResponseDto(*user),
+		User: dto_auth.UserResponseDto{
+			ID:        user.ID,
+			Name:      user.Name,
+			Email:     user.Email,
+			Role:      user.Role,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		},
 	}, nil
 }
 
@@ -101,24 +118,17 @@ func (s *AuthService) Me(ctx context.Context, userID uint) (dto_auth.UserRespons
 		return dto_auth.UserResponseDto{}, err
 	}
 
-	return toUserResponseDto(*user), nil
-}
-
-func normalizeEmail(email string) string {
-	return strings.ToLower(strings.TrimSpace(email))
-}
-
-func toUserResponseDto(user models.User) dto_auth.UserResponseDto {
 	return dto_auth.UserResponseDto{
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
+		Role:      user.Role,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
-	}
+	}, nil
 }
 
 func isUniqueConstraintError(err error) bool {
-	message := strings.ToLower(err.Error())
+	message := shared_normalizers.NormalizeString(err.Error())
 	return strings.Contains(message, "unique") && strings.Contains(message, "email")
 }

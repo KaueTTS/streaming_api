@@ -9,7 +9,7 @@ type Health struct {
 // healthRoute godoc
 // @Summary Verifica se a API está online
 // @Description Retorna o status de funcionamento da API
-// @Tags Health
+// @Tags health
 // @Success 200 {object} Health
 // @Router /health [get]
 func healthRoute(c *fiber.Ctx) error {

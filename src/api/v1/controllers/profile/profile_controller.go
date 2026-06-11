@@ -1,0 +1,242 @@
+package v1_controller_profile
+
+import (
+	"errors"
+
+	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
+	dto_profile "github.com/KaueTTS/streaming_api/src/api/v1/dto/profile"
+	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
+	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
+	validator_profile "github.com/KaueTTS/streaming_api/src/api/v1/validators"
+	service_interface "github.com/KaueTTS/streaming_api/src/services/interfaces"
+	shared_constants "github.com/KaueTTS/streaming_api/src/shared/constants"
+	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
+	shared_errors_profile "github.com/KaueTTS/streaming_api/src/shared/errors/profile"
+	shared_normalizers "github.com/KaueTTS/streaming_api/src/shared/normalizers"
+	"github.com/gofiber/fiber/v2"
+)
+
+type ProfileController struct {
+	profileService service_interface.ProfileServiceInterface
+}
+
+func NewProfileController(profileService service_interface.ProfileServiceInterface) *ProfileController {
+	return &ProfileController{
+		profileService: profileService,
+	}
+}
+
+// ListProfiles godoc
+// @Summary Listar os perfis do usuário logado
+// @Description Retorna uma lista paginada dos perfis associados ao usuário autenticado.
+// @Param page query int false "Número da página" default(1)
+// @Param per_page query int false "Número de itens por página" default(10)
+// @Tags profiles
+// @Success 200 {object} dto_profile.ProfileResponseDto
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/profiles [get]
+// @Security BearerAuth
+func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	var pagination dto_shared.PaginationDto
+	if err := ctx.QueryParser(&pagination); err != nil {
+		return responses.BadRequest(
+			ctx,
+			shared_errors.InvalidQueryParameters,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   shared_constants.Page,
+					Value:   ctx.Query(shared_constants.Page),
+					Message: shared_errors.PageMustBePositive,
+				},
+				{
+					Field:   shared_constants.PerPage,
+					Value:   ctx.Query(shared_constants.PerPage),
+					Message: shared_errors.PerPageMustBePositive,
+				},
+			},
+		)
+	}
+
+	page, perPage := shared_normalizers.NormalizePagination(pagination)
+
+	response, err := c.profileService.ListProfiles(ctx.UserContext(), userID, page, perPage)
+	if err != nil {
+		return responses.InternalServerError(ctx, shared_errors_profile.FailedToListProfiles)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+// CreateProfile godoc
+// @Summary Criar um novo perfil para o usuário logado
+// @Description Cria um novo perfil associado ao usuário autenticado.
+// @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
+// @Tags profiles
+// @Success 201 {object} dto_profile.ProfileDto
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 409 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/profiles [post]
+// @Security BearerAuth
+func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	var request dto_profile.ProfileRequestDto
+	if err := ctx.BodyParser(&request); err != nil {
+		return responses.BadRequest(
+			ctx,
+			shared_errors.InvalidRequestBody,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   "",
+					Value:   "",
+					Message: err.Error(),
+				},
+			},
+		)
+	}
+
+	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidCreateProfileData,
+			errDetails,
+		)
+	}
+
+	response, err := c.profileService.CreateProfile(ctx.UserContext(), userID, request)
+	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileLimitReached) {
+			return responses.Conflict(ctx, shared_errors_profile.ProfileLimitReached)
+		}
+
+		return responses.InternalServerError(ctx, shared_errors_profile.FailedToCreateProfile)
+	}
+
+	return ctx.Status(fiber.StatusCreated).JSON(response)
+}
+
+// UpdateProfile godoc
+// @Summary Atualizar um perfil já cadastrado para o usuário logado
+// @Description Atualiza os dados de um perfil específico associado ao usuário autenticado.
+// @Param id path int true "ID do perfil"
+// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um pefil"
+// @Tags profiles
+// @Success 200 {object} dto_profile.ProfileDto
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 404 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/profiles/{id} [put]
+// @Security BearerAuth
+func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	profileID, profileIDParam, ok := controllers_helpers.ParseUintParam(ctx, "id")
+	if !ok {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidProfileID,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   shared_constants.ID,
+					Value:   profileIDParam,
+					Message: shared_errors_profile.InvalidProfileID,
+				},
+			},
+		)
+	}
+
+	var request dto_profile.ProfileRequestDto
+	if err := ctx.BodyParser(&request); err != nil {
+		return responses.BadRequest(
+			ctx,
+			shared_errors.InvalidRequestBody,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   "",
+					Value:   "",
+					Message: err.Error(),
+				},
+			},
+		)
+	}
+
+	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidUpdateProfileData,
+			errDetails,
+		)
+	}
+
+	response, err := c.profileService.UpdateProfile(ctx.UserContext(), userID, profileID, request)
+	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
+		return responses.InternalServerError(ctx, shared_errors_profile.FailedToUpdateProfile)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+// DeleteProfile godoc
+// @Summary Remover um perfil do usuário logado
+// @Description Remove um perfil específico associado ao usuário autenticado.
+// @Param id path int true "ID do perfil"
+// @Tags profiles
+// @Success 204
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 404 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/profiles/{id} [delete]
+// @Security BearerAuth
+func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	profileID, profileIDParam, ok := controllers_helpers.ParseUintParam(ctx, "id")
+	if !ok {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_profile.InvalidProfileID,
+			[]dto_shared.DetailErrorDto{
+				{
+					Field:   shared_constants.ID,
+					Value:   profileIDParam,
+					Message: shared_errors_profile.InvalidProfileID,
+				},
+			},
+		)
+	}
+
+	if err := c.profileService.DeleteProfile(ctx.UserContext(), userID, profileID); err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
+		return responses.InternalServerError(ctx, shared_errors_profile.FailedToDeleteProfile)
+	}
+
+	return ctx.SendStatus(fiber.StatusNoContent)
+}

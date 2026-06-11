@@ -62,3 +62,11 @@ func InternalServerError(ctx *fiber.Ctx, message string) error {
 		CodeMessage: shared_errors.InternalServerError,
 	})
 }
+
+// Error 502
+func BadGateway(ctx *fiber.Ctx, message string) error {
+	return ctx.Status(fiber.StatusBadGateway).JSON(dto_shared.ErrorDto{
+		Message:     message,
+		CodeMessage: shared_errors.BadGateway,
+	})
+}
