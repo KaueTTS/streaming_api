@@ -40,6 +40,10 @@
 
 ## Arquitetura
 
+```
+src/
+```
+
 ## Projeto em funcionamento
 
 ## Como utilizar o projeto
