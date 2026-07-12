@@ -58,7 +58,7 @@ func ValidateContentListRequest(request dto_content.ContentListRequestDto) []dto
 	details = append(details, validateContentType(request.Type)...)
 	details = append(details, validateContentPage(request.Page)...)
 	details = append(details, validateContentSortBy(request.Type, request.SortBy)...)
-	details = append(details, validateContentGenres(request.WithGenres)...)
+	details = append(details, validateContentGenres(request.Genre)...)
 	details = append(details, validateContentLanguage(request.Language)...)
 	details = append(details, validateContentYear(request.Year)...)
 
@@ -129,15 +129,15 @@ func validateContentSortBy(contentType string, sortBy string) []dto_shared.Detai
 	return nil
 }
 
-func validateContentGenres(withGenres string) []dto_shared.DetailErrorDto {
-	normalizedGenres := strings.TrimSpace(withGenres)
+func validateContentGenres(genre string) []dto_shared.DetailErrorDto {
+	normalizedGenres := strings.TrimSpace(genre)
 	if normalizedGenres == "" {
 		return nil
 	}
 
 	if !contentGenresRegex.MatchString(normalizedGenres) {
 		return []dto_shared.DetailErrorDto{
-			NewDetail(shared_constants.WithGenres, withGenres, shared_errors_content.InvalidContentGenres),
+			NewDetail(shared_constants.Genre, genre, shared_errors_content.InvalidContentGenres),
 		}
 	}
 

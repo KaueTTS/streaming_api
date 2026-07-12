@@ -36,9 +36,7 @@ func TestInit(t *testing.T) {
 		assert.FileExists(t, env.SQLiteDatabaseURL)
 		assert.True(t, db.Migrator().HasTable(&models.User{}))
 		assert.True(t, db.Migrator().HasTable(&models.Profile{}))
-		assert.True(t, db.Migrator().HasTable(&models.Content{}))
 		assert.True(t, db.Migrator().HasTable(&models.Favorite{}))
-		assert.True(t, db.Migrator().HasTable(&models.WatchProgress{}))
 	})
 
 	t.Run("should return error when database directory cannot be created", func(t *testing.T) {

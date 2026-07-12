@@ -30,9 +30,9 @@ func NewProfileController(profileService service_interface.ProfileServiceInterfa
 // ListProfiles godoc
 // @Summary Listar os perfis do usuário logado
 // @Description Retorna uma lista paginada dos perfis associados ao usuário autenticado.
+// @Tags profiles
 // @Param page query int false "Número da página" default(1)
 // @Param per_page query int false "Número de itens por página" default(10)
-// @Tags profiles
 // @Success 200 {object} dto_profile.ProfileResponseDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto
@@ -78,8 +78,8 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 // CreateProfile godoc
 // @Summary Criar um novo perfil para o usuário logado
 // @Description Cria um novo perfil associado ao usuário autenticado.
-// @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
 // @Tags profiles
+// @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
 // @Success 201 {object} dto_profile.ProfileDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto
@@ -93,19 +93,9 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
 	}
 
-	var request dto_profile.ProfileRequestDto
-	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidRequestBody,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: err.Error(),
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseBody[dto_profile.ProfileRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
 	}
 
 	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
@@ -131,9 +121,9 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 // UpdateProfile godoc
 // @Summary Atualizar um perfil já cadastrado para o usuário logado
 // @Description Atualiza os dados de um perfil específico associado ao usuário autenticado.
-// @Param id path int true "ID do perfil"
-// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um pefil"
 // @Tags profiles
+// @Param id path int true "ID do perfil"
+// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um perfil"
 // @Success 200 {object} dto_profile.ProfileDto
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto
@@ -162,19 +152,9 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 		)
 	}
 
-	var request dto_profile.ProfileRequestDto
-	if err := ctx.BodyParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidRequestBody,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: err.Error(),
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseBody[dto_profile.ProfileRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
 	}
 
 	if errDetails := validator_profile.ValidateProfileRequest(request); len(errDetails) > 0 {
@@ -200,8 +180,8 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 // DeleteProfile godoc
 // @Summary Remover um perfil do usuário logado
 // @Description Remove um perfil específico associado ao usuário autenticado.
-// @Param id path int true "ID do perfil"
 // @Tags profiles
+// @Param id path int true "ID do perfil"
 // @Success 204
 // @Failure 400 {object} dto_shared.ErrorDto
 // @Failure 401 {object} dto_shared.ErrorDto

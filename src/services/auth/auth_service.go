@@ -62,14 +62,7 @@ func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterReq
 		return dto_auth.UserResponseDto{}, err
 	}
 
-	return dto_auth.UserResponseDto{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}, nil
+	return mapUserResponse(user), nil
 }
 
 func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDto) (dto_auth.AuthResponseDto, error) {
@@ -97,14 +90,7 @@ func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDt
 		Token:     token,
 		TokenType: "Bearer",
 		ExpiresIn: int64(security.GetExpirationDuration().Seconds()),
-		User: dto_auth.UserResponseDto{
-			ID:        user.ID,
-			Name:      user.Name,
-			Email:     user.Email,
-			Role:      user.Role,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-		},
+		User:      mapUserResponse(user),
 	}, nil
 }
 
@@ -118,6 +104,10 @@ func (s *AuthService) Me(ctx context.Context, userID uint) (dto_auth.UserRespons
 		return dto_auth.UserResponseDto{}, err
 	}
 
+	return mapUserResponse(user), nil
+}
+
+func mapUserResponse(user *models.User) dto_auth.UserResponseDto {
 	return dto_auth.UserResponseDto{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -125,7 +115,7 @@ func (s *AuthService) Me(ctx context.Context, userID uint) (dto_auth.UserRespons
 		Role:      user.Role,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
-	}, nil
+	}
 }
 
 func isUniqueConstraintError(err error) bool {

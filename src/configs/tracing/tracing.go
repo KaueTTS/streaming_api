@@ -26,7 +26,7 @@ func Init(ctx context.Context) (*sdktrace.TracerProvider, error) {
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(env.AppName),
-			semconv.DeploymentEnvironmentNameDevelopment,
+			semconv.DeploymentEnvironmentNameKey.String(env.AppEnv),
 		),
 	)
 	if err != nil {

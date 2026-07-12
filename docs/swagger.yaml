@@ -84,6 +84,30 @@ definitions:
       pagination:
         $ref: '#/definitions/dto_shared.PaginationDto'
     type: object
+  dto_favorite.FavoriteDto:
+    properties:
+      content_id:
+        type: integer
+      content_type:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      profile_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto_favorite.FavoriteResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto_favorite.FavoriteDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto_shared.PaginationDto'
+    type: object
   dto_profile.ProfileDto:
     properties:
       avatar_url:
@@ -143,7 +167,7 @@ definitions:
     properties:
       page:
         type: integer
-      pageCount:
+      page_count:
         type: integer
       per_page:
         type: integer
@@ -159,7 +183,7 @@ info:
   contact:
     name: KauêTTS
     url: https://github.com/KaueTTS
-  description: API
+  description: API de streaming
   title: Streaming API
   version: "1.0"
 paths:
@@ -203,7 +227,7 @@ paths:
             $ref: '#/definitions/dto_shared.ErrorDto'
       summary: Realiza login do usuário
       tags:
-      - authorization
+      - auth
   /v1/auth/me:
     get:
       description: Retorna os dados do usuário autenticado com base no token enviado
@@ -233,7 +257,7 @@ paths:
       - BearerAuth: []
       summary: Busca o usuário autenticado
       tags:
-      - authorization
+      - auth
   /v1/auth/register:
     post:
       description: Cria uma nova conta de usuário no sistema
@@ -263,7 +287,7 @@ paths:
             $ref: '#/definitions/dto_shared.ErrorDto'
       summary: Registra um novo usuário
       tags:
-      - authorization
+      - auth
   /v1/contents:
     get:
       description: Lista filmes ou séries usando a integração com a TMDB API
@@ -367,6 +391,93 @@ paths:
       summary: Buscar conteúdos
       tags:
       - contents
+  /v1/favorites:
+    get:
+      description: Retorna uma lista paginada de filmes e séries favoritos de um perfil
+        específico.
+      parameters:
+      - description: ID do perfil
+        in: query
+        name: profile_id
+        required: true
+        type: integer
+      - default: 1
+        description: Número da página
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Número de itens por página
+        in: query
+        name: per_page
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto_favorite.FavoriteResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Lista os favoritos de um perfil
+      tags:
+      - favorites
+    post:
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      tags:
+      - favorites
+  /v1/favorites/{id}:
+    delete:
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      tags:
+      - favorites
   /v1/profiles:
     get:
       description: Retorna uma lista paginada dos perfis associados ao usuário autenticado.
@@ -480,7 +591,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Dados para atualizar um pefil
+      - description: Dados para atualizar um perfil
         in: body
         name: request
         required: true

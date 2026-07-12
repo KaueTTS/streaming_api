@@ -26,7 +26,7 @@ func (s *ContentService) ListContents(ctx context.Context, request dto_content.C
 		Type:       shared_normalizers.NormalizeString(request.Type),
 		Page:       shared_normalizers.NormalizePage(request.Page),
 		SortBy:     shared_normalizers.NormalizeString(request.SortBy),
-		WithGenres: strings.TrimSpace(request.WithGenres),
+		WithGenres: strings.TrimSpace(request.Genre),
 		Language:   strings.TrimSpace(request.Language),
 		Year:       request.Year,
 	}
