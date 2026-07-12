@@ -1,8 +1,8 @@
 package v1_controller_content
 
 import (
+	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
 	dto_content "github.com/KaueTTS/streaming_api/src/api/v1/dto/content"
-	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
 	validator_content "github.com/KaueTTS/streaming_api/src/api/v1/validators"
 	service_interface "github.com/KaueTTS/streaming_api/src/services/interfaces"
@@ -38,19 +38,9 @@ func NewContentController(contentService service_interface.ContentServiceInterfa
 // @Router /v1/contents [get]
 // @Security BearerAuth
 func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
-	var request dto_content.ContentListRequestDto
-	if err := ctx.QueryParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidQueryParameters,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: shared_errors.InvalidQueryParameters,
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseQuery[dto_content.ContentListRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidQueryParameters, details)
 	}
 
 	if errDetails := validator_content.ValidateContentListRequest(request); len(errDetails) > 0 {
@@ -84,19 +74,9 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 // @Router /v1/contents/search [get]
 // @Security BearerAuth
 func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
-	var request dto_content.ContentSearchRequestDto
-	if err := ctx.QueryParser(&request); err != nil {
-		return responses.BadRequest(
-			ctx,
-			shared_errors.InvalidQueryParameters,
-			[]dto_shared.DetailErrorDto{
-				{
-					Field:   "",
-					Value:   "",
-					Message: shared_errors.InvalidQueryParameters,
-				},
-			},
-		)
+	request, details, ok := controllers_helpers.ParseQuery[dto_content.ContentSearchRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidQueryParameters, details)
 	}
 
 	if errDetails := validator_content.ValidateContentSearchRequest(request); len(errDetails) > 0 {

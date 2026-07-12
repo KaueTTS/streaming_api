@@ -25,9 +25,7 @@ func Init() (*gorm.DB, error) {
 	if err := db.AutoMigrate(
 		&models.User{},
 		&models.Profile{},
-		&models.Content{},
 		&models.Favorite{},
-		&models.WatchProgress{},
 	); err != nil {
 		return nil, fmt.Errorf("erro ao migrar banco de dados: %w", err)
 	}

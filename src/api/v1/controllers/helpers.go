@@ -21,7 +21,7 @@ func ParseBody[T any](ctx *fiber.Ctx) (T, []dto_shared.DetailErrorDto, bool) {
 			{
 				Field:   "",
 				Value:   "",
-				Message: err.Error(),
+				Message: shared_errors.InvalidRequestBody,
 			},
 		}, false
 	}

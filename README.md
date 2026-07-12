@@ -18,21 +18,21 @@
 <details closed>
 <summary>Back-End</summary>
   <div width="140px">
-      <img src="https://skillicons.dev/icons?i=go,sqlite" />
+      <img src="https://i.icoziv.workers.dev/icons?i=go,sqlite" />
   </div>
 </details>
 
 <details closed>
 <summary>Infra</summary>
   <div width="140px">
-      <img src="https://skillicons.dev/icons?i=docker" />
+      <img src="https://i.icoziv.workers.dev/icons?i=docker" />
   </div>
 </details>
 
 <details closed>
 <summary>Ferramentas</summary>
   <div width="140px">
-      <img src="https://skillicons.dev/icons?i=vscode" />
+      <img src="https://i.icoziv.workers.dev/icons?i=vscode" />
   </div>
 </details>
 

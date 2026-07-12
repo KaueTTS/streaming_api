@@ -780,7 +780,7 @@ const docTemplate = `{
                 "page": {
                     "type": "integer"
                 },
-                "pageCount": {
+                "page_count": {
                     "type": "integer"
                 },
                 "per_page": {

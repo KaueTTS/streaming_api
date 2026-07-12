@@ -37,10 +37,12 @@ func main() {
 }
 
 func run() error {
+	// Inicialização das variáveis
 	if err := env.Init(); err != nil {
 		return fmt.Errorf("erro ao inicializar variáveis de ambiente: %w", err)
 	}
 
+	// Inicialização do tracing
 	ctx := context.Background()
 	tracerProvider, err := tracing.Init(ctx)
 	if err != nil {
@@ -52,11 +54,13 @@ func run() error {
 		}
 	}()
 
+	// Inicialização do SQLite
 	db, err := sqlite_conn.Init()
 	if err != nil {
 		return fmt.Errorf("erro ao inicializar sqlite: %w", err)
 	}
 
+	// Inicialização do Redis
 	redisClient, err := redis_conn.Init(ctx)
 	if err != nil {
 		log.Printf("Redis indisponível, usando fallback em memória: %v", err)
@@ -66,6 +70,7 @@ func run() error {
 		defer redisClient.Close()
 	}
 
+	// Inicialização da API
 	app := api.Init(db, redisClient)
 	if err := api.Listen(app); err != nil {
 		return fmt.Errorf("erro ao iniciar api: %w", err)
