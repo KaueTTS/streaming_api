@@ -2,7 +2,6 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "master", "qa" ]
   pull_request:
     branches: [ "master", "qa" ]
     # É fundamental listar os 'types' para que o evento 'closed' seja escutado!
@@ -13,11 +12,13 @@ permissions:
   contents: write
 
 jobs:
-  executar-esteira:
+  pipeline:
     uses: KaueTTS/ci-templates/.github/workflows/golang.yml@main
     with:
       go_version: '1.25'
       min_coverage: '20'
       binary_name: 'streaming-api' 
+      exclude_packages: '/shared|/mocks|/models|/dto|/container'
+      build_path: '.'
       target_branch: 'master'
       source_branch: 'qa'
