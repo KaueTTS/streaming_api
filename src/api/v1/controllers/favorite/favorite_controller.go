@@ -28,6 +28,20 @@ func NewFavoriteController(favoriteService service_interface.FavoriteServiceInte
 	}
 }
 
+// ListFavorites godoc
+// @Summary Lista os favoritos de um perfil
+// @Description Retorna uma lista paginada de filmes e séries favoritos de um perfil específico.
+// @Tags favorites
+// @Param profile_id query int true "ID do perfil"
+// @Param page query int false "Número da página" default(1)
+// @Param per_page query int false "Número de itens por página" default(10)
+// @Success 200 {object} dto_favorite.FavoriteResponseDto
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 404 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/favorites [get]
+// @Security BearerAuth
 func (c *FavoriteController) ListFavorites(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
@@ -70,10 +84,30 @@ func (c *FavoriteController) ListFavorites(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
+// AddFavorite godoc
+// @Summary
+// @Description
+// @Tags favorites
+// @Success 200
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/favorites [post]
+// @Security BearerAuth
 func (c *FavoriteController) AddFavorite(ctx *fiber.Ctx) error {
 	return fmt.Errorf("não implementado")
 }
 
+// RemoveFavorite godoc
+// @Summary
+// @Description
+// @Tags favorites
+// @Success 200
+// @Failure 400 {object} dto_shared.ErrorDto
+// @Failure 401 {object} dto_shared.ErrorDto
+// @Failure 500 {object} dto_shared.ErrorDto
+// @Router /v1/favorites/{id} [delete]
+// @Security BearerAuth
 func (c *FavoriteController) RemoveFavorite(ctx *fiber.Ctx) error {
 	return fmt.Errorf("não implementado")
 }

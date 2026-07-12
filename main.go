@@ -15,7 +15,7 @@ import (
 
 // @title Streaming API
 // @version 1.0
-// @description API
+// @description API de streaming
 
 // @contact.name KauêTTS
 // @contact.url https://github.com/KaueTTS

@@ -39,10 +39,12 @@ func (s *FavoriteService) ListFavorites(ctx context.Context, userID, profileID u
 	data := make([]dto_favorite.FavoriteDto, 0, len(favorites))
 	for _, favorite := range favorites {
 		data = append(data, dto_favorite.FavoriteDto{
-			ID:        favorite.ID,
-			ProfileID: favorite.ProfileID,
-			CreatedAt: favorite.CreatedAt,
-			UpdatedAt: favorite.UpdatedAt,
+			ID:          favorite.ID,
+			ProfileID:   favorite.ProfileID,
+			ContentID:   favorite.ContentID,
+			ContentType: favorite.ContentType,
+			CreatedAt:   favorite.CreatedAt,
+			UpdatedAt:   favorite.UpdatedAt,
 		})
 	}
 

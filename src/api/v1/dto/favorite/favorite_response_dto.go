@@ -7,10 +7,12 @@ import (
 )
 
 type FavoriteDto struct {
-	ID        uint      `json:"id"`
-	ProfileID uint      `json:"profile_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uint      `json:"id"`
+	ProfileID   uint      `json:"profile_id"`
+	ContentID   int       `json:"content_id"`
+	ContentType string    `json:"content_type"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type FavoriteResponseDto struct {
