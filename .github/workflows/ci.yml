@@ -2,6 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
+    branches: [ "master", "qa" ]
   pull_request:
     branches: [ "master", "qa" ]
     # É fundamental listar os 'types' para que o evento 'closed' seja escutado!
