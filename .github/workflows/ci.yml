@@ -22,3 +22,4 @@ jobs:
       build_path: '.'
       target_branch: 'master'
       source_branch: 'qa'
+    secrets: inherit
