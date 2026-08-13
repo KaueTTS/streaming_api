@@ -4,3 +4,4 @@ others.txt
 __debug_bin.exe
 data/
 coverage.out
+__debug_bin*

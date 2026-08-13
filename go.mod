@@ -7,7 +7,6 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.13
 	github.com/gofiber/storage/redis/v3 v3.4.7
 	github.com/golang-jwt/jwt/v5 v5.3.1
-	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.19.0
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/fiber-swagger v1.3.0

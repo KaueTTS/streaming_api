@@ -8,6 +8,10 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// Init inicializa a conexão com o Redis.
+// Se a variável de ambiente RedisHost estiver vazia, retorna nil sem erro.
+// Caso contrário, cria um novo cliente Redis e verifica a conexão com o método Ping.
+// Se a conexão falhar, fecha o cliente e retorna um erro.
 func Init(ctx context.Context) (*redis.Client, error) {
 	if env.RedisHost == "" {
 		return nil, nil

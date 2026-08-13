@@ -25,16 +25,16 @@ func NewAuthController(authService service_interface.AuthServiceInterface) *Auth
 	}
 }
 
-// Register godoc
-// @Summary Registra um novo usuário
+// Register		godoc
+// @Summary 	Registra um novo usuário
 // @Description Cria uma nova conta de usuário no sistema
-// @Tags auth
-// @Param request body dto_auth.RegisterRequestDto true "Dados para registrar o usuário"
-// @Success 201 {object} dto_auth.UserResponseDto
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 409 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/auth/register [post]
+// @Tags 		auth
+// @Param 		request body dto_auth.RegisterRequestDto true "Dados para registrar o usuário"
+// @Success 	201 {object} dto_auth.UserResponseDto
+// @Failure 	400 {object} dto_shared.ErrorDto
+// @Failure 	409 {object} dto_shared.ErrorDto
+// @Failure 	500 {object} dto_shared.ErrorDto
+// @Router 		/v1/auth/register [post]
 func (c *AuthController) Register(ctx *fiber.Ctx) error {
 	request, details, ok := controllers_helpers.ParseBody[dto_auth.RegisterRequestDto](ctx)
 	if !ok {
@@ -75,16 +75,16 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
-// Login godoc
-// @Summary Realiza login do usuário
+// Login 		godoc
+// @Summary 	Realiza login do usuário
 // @Description Autentica um usuário com e-mail e senha e retorna o token de acesso
-// @Tags auth
-// @Param request body dto_auth.LoginRequestDto true "Dados para autenticação"
-// @Success 200 {object} dto_auth.AuthResponseDto
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/auth/login [post]
+// @Tags 		auth
+// @Param 		request body dto_auth.LoginRequestDto true "Dados para autenticação"
+// @Success 	200 {object} dto_auth.AuthResponseDto
+// @Failure 	400 {object} dto_shared.ErrorDto
+// @Failure 	401 {object} dto_shared.ErrorDto
+// @Failure 	500 {object} dto_shared.ErrorDto
+// @Router 		/v1/auth/login [post]
 func (c *AuthController) Login(ctx *fiber.Ctx) error {
 	request, details, ok := controllers_helpers.ParseBody[dto_auth.LoginRequestDto](ctx)
 	if !ok {
@@ -111,17 +111,17 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-// Me godoc
-// @Summary Busca o usuário autenticado
+// Me 			godoc
+// @Summary 	Busca o usuário autenticado
 // @Description Retorna os dados do usuário autenticado com base no token enviado no header Authorization
-// @Tags auth
-// @Success 200 {object} dto_auth.UserResponseDto
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 404 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/auth/me [get]
-// @Security BearerAuth
+// @Tags 		auth
+// @Success 	200 {object} dto_auth.UserResponseDto
+// @Failure 	400 {object} dto_shared.ErrorDto
+// @Failure 	401 {object} dto_shared.ErrorDto
+// @Failure 	404 {object} dto_shared.ErrorDto
+// @Failure 	500 {object} dto_shared.ErrorDto
+// @Router 		/v1/auth/me [get]
+// @Security 	BearerAuth
 func (c *AuthController) Me(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {

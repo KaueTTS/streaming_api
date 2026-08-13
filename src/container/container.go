@@ -17,6 +17,7 @@ type Container struct {
 	RedisClient        *redis.Client
 }
 
+// Build constrói o container com as dependências necessárias
 func Build(db *gorm.DB, redisClient *redis.Client) *Container {
 	return &Container{
 		AuthController:     buildAuthController(db),

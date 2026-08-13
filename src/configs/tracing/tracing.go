@@ -12,6 +12,10 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.41.0"
 )
 
+// Init inicializa o OpenTelemetry com OTLP HTTP exporter.
+// Configura o TracerProvider com o batcher e o resource.
+// Retorna o TracerProvider.
+// Caso ocorra algum erro, retorna um erro.
 func Init(ctx context.Context) (*sdktrace.TracerProvider, error) {
 	exporter, err := otlptracehttp.New(ctx,
 		otlptracehttp.WithEndpoint(env.OTLPExporterEndpoint),

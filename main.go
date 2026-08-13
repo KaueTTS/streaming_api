@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
 
 	_ "github.com/KaueTTS/streaming_api/docs"
 	api "github.com/KaueTTS/streaming_api/src/api"
@@ -31,26 +34,35 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	if err := run(); err != nil {
-		log.Fatalf("falha ao iniciar aplicação: %v", err)
+	// Configurar o formato do log para JSON
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
+	// Cria um contexto que é cancelado automaticamente se o app receber um sinal de parar
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+
+	// Executa a aplicação
+	if err := run(ctx); err != nil {
+		slog.Error("Falha ao iniciar aplicação", "erro", err)
+		os.Exit(1)
 	}
 }
 
-func run() error {
+func run(ctx context.Context) error {
 	// Inicialização das variáveis
 	if err := env.Init(); err != nil {
 		return fmt.Errorf("erro ao inicializar variáveis de ambiente: %w", err)
 	}
 
 	// Inicialização do tracing
-	ctx := context.Background()
 	tracerProvider, err := tracing.Init(ctx)
 	if err != nil {
 		return fmt.Errorf("erro ao inicializar tracing: %w", err)
 	}
 	defer func() {
 		if err := tracerProvider.Shutdown(ctx); err != nil {
-			log.Printf("erro ao finalizar tracing: %v", err)
+			slog.Error("Erro ao finalizar tracing", "erro", err)
 		}
 	}()
 
@@ -63,7 +75,7 @@ func run() error {
 	// Inicialização do Redis
 	redisClient, err := redis_conn.Init(ctx)
 	if err != nil {
-		log.Printf("Redis indisponível, usando fallback em memória: %v", err)
+		slog.Warn("Redis indisponível, usando fallback em memória", "erro", err)
 		redisClient = nil
 	}
 	if redisClient != nil {

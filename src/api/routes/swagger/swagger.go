@@ -8,7 +8,7 @@ import (
 )
 
 func Init(app *fiber.App) {
-	if env.AppEnv == "development" {
+	if env.AppEnv != "production" {
 		app.Get("/swagger/*", fiberSwagger.WrapHandler)
 	}
 }

@@ -36,7 +36,7 @@ func TestAuthRequired(t *testing.T) {
 		require.NoError(t, json.Unmarshal([]byte(body), &errorResponse))
 
 		assert.Equal(t, shared_errors_auth.TokenMissingOrInvalid, errorResponse.Message)
-		assert.Equal(t, shared_errors.Unauthorized, errorResponse.CodeMessage)
+		assert.Equal(t, responses_dto.Unauthorized, errorResponse.CodeMessage)
 	})
 
 	t.Run("should return unauthorized when authorization header is invalid", func(t *testing.T) {
@@ -56,7 +56,7 @@ func TestAuthRequired(t *testing.T) {
 		require.NoError(t, json.Unmarshal([]byte(body), &errorResponse))
 
 		assert.Equal(t, shared_errors_auth.TokenMissingOrInvalid, errorResponse.Message)
-		assert.Equal(t, shared_errors.Unauthorized, errorResponse.CodeMessage)
+		assert.Equal(t, responses_dto.Unauthorized, errorResponse.CodeMessage)
 	})
 
 	t.Run("should return unauthorized when token is invalid", func(t *testing.T) {
@@ -76,7 +76,7 @@ func TestAuthRequired(t *testing.T) {
 		require.NoError(t, json.Unmarshal([]byte(body), &errorResponse))
 
 		assert.Equal(t, shared_errors_auth.TokenInvalidOrExpired, errorResponse.Message)
-		assert.Equal(t, shared_errors.Unauthorized, errorResponse.CodeMessage)
+		assert.Equal(t, responses_dto.Unauthorized, errorResponse.CodeMessage)
 	})
 
 	t.Run("should call next when token is valid", func(t *testing.T) {
@@ -123,7 +123,7 @@ func TestAdminRequired(t *testing.T) {
 		require.NoError(t, json.Unmarshal([]byte(body), &errorResponse))
 
 		assert.Equal(t, shared_errors.AccessAdminOnly, errorResponse.Message)
-		assert.Equal(t, shared_errors.Forbidden, errorResponse.CodeMessage)
+		assert.Equal(t, responses_dto.Forbidden, errorResponse.CodeMessage)
 	})
 
 	t.Run("should return forbidden when user role is not admin", func(t *testing.T) {
@@ -148,7 +148,7 @@ func TestAdminRequired(t *testing.T) {
 		require.NoError(t, json.Unmarshal([]byte(body), &errorResponse))
 
 		assert.Equal(t, shared_errors.AccessAdminOnly, errorResponse.Message)
-		assert.Equal(t, shared_errors.Forbidden, errorResponse.CodeMessage)
+		assert.Equal(t, responses_dto.Forbidden, errorResponse.CodeMessage)
 	})
 
 	t.Run("should call next when user role is admin", func(t *testing.T) {

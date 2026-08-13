@@ -22,6 +22,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// Init inicia a aplicação e configura as rotas.
+// Configura o recover, otel, helmet, cors, injeta as rotas e o container.
+// Usa o redisClient para criar o limiterStorage se o redisClient for diferente de nil.
+// Retorna uma instância da aplicação.
 func Init(db *gorm.DB, redisClient *redis.Client) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName: env.AppName,
@@ -42,28 +46,30 @@ func Init(db *gorm.DB, redisClient *redis.Client) *fiber.App {
 		AllowHeaders: "Authorization,Content-Type",
 	}))
 
-	applicationContainer := container.Build(db, redisClient)
+	appContainer := container.Build(db, redisClient)
 
 	var limiterStorage fiber.Storage
 	if redisClient != nil {
 		limiterStorage = redis_storage.NewFromConnection(redisClient)
 	}
 
-	injectRoutes(app, applicationContainer, limiterStorage)
+	injectRoutes(app, appContainer, limiterStorage)
 
 	return app
 }
 
-func injectRoutes(app *fiber.App, applicationContainer *container.Container, limiterStorage fiber.Storage) {
+// Listen inicia o servidor na porta definida em env.Port
+func Listen(app *fiber.App) error {
+	return app.Listen(fmt.Sprintf(":%s", env.Port))
+}
+
+// injectRoutes injeta as rotas no aplicativo.
+func injectRoutes(app *fiber.App, container *container.Container, limiterStorage fiber.Storage) {
 	route_health.Init(app)
 	route_swagger.Init(app)
 
-	route_auth.Init(app, applicationContainer.AuthController, limiterStorage)
-	route_content.Init(app, applicationContainer.ContentController)
-	route_profile.Init(app, applicationContainer.ProfileController)
-	route_favorite.Init(app, applicationContainer.FavoriteController)
-}
-
-func Listen(app *fiber.App) error {
-	return app.Listen(fmt.Sprintf(":%s", env.Port))
+	route_auth.Init(app, container.AuthController, limiterStorage)
+	route_content.Init(app, container.ContentController)
+	route_profile.Init(app, container.ProfileController)
+	route_favorite.Init(app, container.FavoriteController)
 }
