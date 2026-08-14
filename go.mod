@@ -1,6 +1,6 @@
 module github.com/KaueTTS/streaming_api
 
-go 1.25.1
+go 1.26.1
 
 require (
 	github.com/glebarez/sqlite v1.11.0

@@ -17,6 +17,7 @@ func NewProfileRepository(db *gorm.DB) *ProfileRepository {
 	}
 }
 
+// FindByUserID lista os perfis de um usuário, verificando se o perfil pertence ao usuário
 func (r *ProfileRepository) FindByUserID(ctx context.Context, userID uint, page int, perPage int) ([]models.Profile, int64, error) {
 	var profiles []models.Profile
 	var total int64
@@ -40,6 +41,7 @@ func (r *ProfileRepository) FindByUserID(ctx context.Context, userID uint, page 
 	return profiles, total, nil
 }
 
+// CountByUserID conta quantos perfis um usuário tem, verificando se o perfil pertence ao usuário
 func (r *ProfileRepository) CountByUserID(ctx context.Context, userID uint) (int64, error) {
 	var total int64
 
@@ -53,6 +55,7 @@ func (r *ProfileRepository) CountByUserID(ctx context.Context, userID uint) (int
 	return total, nil
 }
 
+// Create cria um novo perfil para um usuário, verificando se o perfil pertence ao usuário
 func (r *ProfileRepository) Create(ctx context.Context, profile *models.Profile) error {
 	if err := r.db.WithContext(ctx).Create(profile).Error; err != nil {
 		return err
@@ -61,6 +64,7 @@ func (r *ProfileRepository) Create(ctx context.Context, profile *models.Profile)
 	return nil
 }
 
+// Update atualiza um perfil, verificando se o perfil pertence ao usuário
 func (r *ProfileRepository) Update(ctx context.Context, profile *models.Profile) error {
 	var existingProfile models.Profile
 
@@ -82,6 +86,7 @@ func (r *ProfileRepository) Update(ctx context.Context, profile *models.Profile)
 	return nil
 }
 
+// Delete deleta um perfil, verificando se o perfil pertence ao usuário
 func (r *ProfileRepository) Delete(ctx context.Context, userID, profileID uint) error {
 	result := r.db.WithContext(ctx).
 		Where("id = ? AND user_id = ?", profileID, userID).

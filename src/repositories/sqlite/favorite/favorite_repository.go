@@ -17,6 +17,7 @@ func NewFavoriteRepository(db *gorm.DB) *FavoriteRepository {
 	}
 }
 
+// FindByProfileID busca os favoritos de um perfil, verificando se o perfil pertence ao usuário
 func (r *FavoriteRepository) FindByProfileID(ctx context.Context, userID, profileID uint, page, perPage int) ([]models.Favorite, int64, error) {
 	var profileCount int64
 

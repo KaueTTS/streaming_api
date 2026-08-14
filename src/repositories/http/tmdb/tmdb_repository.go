@@ -33,6 +33,7 @@ func NewTMDBRepository() *TMDBRepository {
 	}
 }
 
+// ListContents lista os conteúdos da TMBD baseado nos filtros passados pelo usuário
 func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentListFiltersDto) (dto.GetContentResponseDto, error) {
 	baseURL := fmt.Sprintf("%s/discover/%s", r.baseURL, filters.Type)
 
@@ -81,6 +82,7 @@ func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentLi
 	return response, nil
 }
 
+// SearchContents busca os conteúdos da TMBD baseado nos filtros passados pelo usuário
 func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.ContentSearchFiltersDto) (dto.GetContentResponseDto, error) {
 	baseURL := fmt.Sprintf("%s/search/%s", r.baseURL, filters.Type)
 	queryParams := url.Values{}
@@ -118,6 +120,7 @@ func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.Content
 	return response, nil
 }
 
+// addQueryParam adiciona parâmetros à query string da requisição
 func addQueryParam(queryParams url.Values, key string, value string) {
 	if value != "" {
 		queryParams.Set(key, value)
