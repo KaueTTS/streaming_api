@@ -250,4 +250,3 @@ func createProfileTestProfile(t *testing.T, db *gorm.DB, userID uint, name strin
 
 	return profile
 }
-
