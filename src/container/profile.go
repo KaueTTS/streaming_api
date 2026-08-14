@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// buildProfileController constrói o ProfileController com as dependências necessárias
 func buildProfileController(db *gorm.DB) *v1_controller_profile.ProfileController {
 	profileRepository := repository_sqlite_profile.NewProfileRepository(db)
 	profileService := service_profile.NewProfileService(profileRepository)

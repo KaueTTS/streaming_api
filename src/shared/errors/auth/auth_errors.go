@@ -1,5 +1,6 @@
 package shared_errors_auth
 
+// Erros comuns da rota de auth
 const (
 	InvalidRegisterData = "dados de cadastro inválidos"
 	InvalidLoginData    = "dados de login inválidos"
@@ -17,6 +18,7 @@ const (
 	TooManyAuthAttempts = "muitas tentativas, tente novamente em alguns instantes"
 )
 
+// Erros comuns de senha
 const (
 	PasswordRequired              = "senha é obrigatória"
 	PasswordMustLeast8Character   = "senha deve ter pelo menos 8 caracteres"
@@ -26,6 +28,7 @@ const (
 	ErrInvalidCredentials         = "credenciais inválidas"
 )
 
+// Erros comuns de email
 const (
 	EmailRequired      = "e-mail é obrigatório"
 	EmailInvalid       = "e-mail inválido"

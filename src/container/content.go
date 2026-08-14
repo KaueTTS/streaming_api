@@ -6,6 +6,7 @@ import (
 	service_content "github.com/KaueTTS/streaming_api/src/services/content"
 )
 
+// buildContentController constrói o ContentController com as dependências necessárias
 func buildContentController() *v1_controller_content.ContentController {
 	tmdbRepository := repository_http_tmdb.NewTMDBRepository()
 	contentService := service_content.NewContentService(tmdbRepository)

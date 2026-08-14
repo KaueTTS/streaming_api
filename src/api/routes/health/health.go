@@ -18,6 +18,7 @@ func healthRoute(c *fiber.Ctx) error {
 	})
 }
 
+// Init inicia as rotas de health.
 func Init(app *fiber.App) {
 	app.Get("/health", healthRoute)
 }

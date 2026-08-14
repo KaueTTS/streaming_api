@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// buildFavoriteController constrói o FavoriteController com as dependências necessárias
 func buildFavoriteController(db *gorm.DB) *v1_controller_favorite.FavoriteController {
 	favoriteRepository := repository_sqlite_favorite.NewFavoriteRepository(db)
 	favoriteService := service_favorite.NewFavoriteService(favoriteRepository)

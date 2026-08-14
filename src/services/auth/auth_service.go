@@ -25,6 +25,7 @@ func NewAuthService(authRepositoryInterface repository_interface.AuthRepositoryI
 	}
 }
 
+// Register cria um novo usuário
 func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterRequestDto) (dto_auth.UserResponseDto, error) {
 	name := strings.TrimSpace(request.Name)
 	email := shared_normalizers.NormalizeString(request.Email)
@@ -65,6 +66,7 @@ func (s *AuthService) Register(ctx context.Context, request dto_auth.RegisterReq
 	return mapUserResponse(user), nil
 }
 
+// Login faz login de um usuário e retorna o token de acesso
 func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDto) (dto_auth.AuthResponseDto, error) {
 	email := shared_normalizers.NormalizeString(request.Email)
 
@@ -94,6 +96,7 @@ func (s *AuthService) Login(ctx context.Context, request dto_auth.LoginRequestDt
 	}, nil
 }
 
+// Me busca o usuário autenticado pelo ID e retorna o usuário
 func (s *AuthService) Me(ctx context.Context, userID uint) (dto_auth.UserResponseDto, error) {
 	user, err := s.AuthRepositoryInterface.FindByID(ctx, userID)
 	if err != nil {
@@ -107,6 +110,7 @@ func (s *AuthService) Me(ctx context.Context, userID uint) (dto_auth.UserRespons
 	return mapUserResponse(user), nil
 }
 
+// mapUserResponse mapeia um modelo User para um DTO UserResponseDto
 func mapUserResponse(user *models.User) dto_auth.UserResponseDto {
 	return dto_auth.UserResponseDto{
 		ID:        user.ID,
@@ -118,6 +122,7 @@ func mapUserResponse(user *models.User) dto_auth.UserResponseDto {
 	}
 }
 
+// isUniqueConstraintError verifica se o erro é um erro de constraint unique
 func isUniqueConstraintError(err error) bool {
 	message := shared_normalizers.NormalizeString(err.Error())
 	return strings.Contains(message, "unique") && strings.Contains(message, "email")
