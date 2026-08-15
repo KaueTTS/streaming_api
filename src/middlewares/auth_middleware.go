@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// AuthRequired verifica se o usuário está autenticado.
 func AuthRequired() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		token, err := security.ExtractBearerToken(ctx.Get("Authorization"))
@@ -28,6 +29,7 @@ func AuthRequired() fiber.Handler {
 	}
 }
 
+// AdminRequired verifica se o usuário é administrador.
 func AdminRequired() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		role, ok := ctx.Locals("user_role").(string)
