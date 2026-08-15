@@ -9,6 +9,16 @@
 
 ### Tópicos
 
+- [Descrição do projeto](#descrição-do-projeto)
+  - [Funcionalidades Principais](#funcionalidades-principais)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+  - [Arquitetura do Código (micro)](#arquitetura-do-código-micro)
+  - [Arquitetura do Software (macro)](#arquitetura-do-software-macro)
+- [Projeto em funcionamento](#projeto-em-funcionamento)
+- [Como rodar o projeto](#como-rodar-o-projeto)
+- [Colaboradores](#colaboradores)
+
 ## Descrição do projeto
 
 ### Funcionalidades Principais
@@ -16,16 +26,21 @@
 ## Tecnologias
 
 <details closed>
-<summary>Back-End</summary>
+<summary>Linguagens e Frameworks</summary>
   <div width="140px">
-      <img src="https://i.icoziv.workers.dev/icons?i=go,sqlite,redis,swagger" />
-      <br>
-      <img src="https://i.icoziv.workers.dev/icons?i=jwt,fiber,gorm,opentelemetry" />
+      <img src="https://i.icoziv.workers.dev/icons?i=go,fiber,opentelemetry" />
   </div>
 </details>
 
 <details closed>
-<summary>Infra</summary>
+<summary>Bancos de Dados e Armazenamento</summary>
+  <div width="140px">
+      <img src="https://i.icoziv.workers.dev/icons?i=sqlite,redis" />
+  </div>
+</details>
+
+<details closed>
+<summary>DevOps, Cloud e Infraestrutura</summary>
   <div width="140px">
       <img src="https://i.icoziv.workers.dev/icons?i=docker" />
   </div>
@@ -34,19 +49,62 @@
 <details closed>
 <summary>Ferramentas</summary>
   <div width="140px">
-      <img src="https://i.icoziv.workers.dev/icons?i=vscode" />
+      <img src="https://i.icoziv.workers.dev/icons?i=vscode,swagger,jwt,gorm" />
   </div>
 </details>
 
 ## Arquitetura
 
+### Arquitetura do Código (micro)
+
 ```
 src/
+├── api
+│   ├── routes
+│   └── v1
+│       ├── controllers
+│       ├── dto
+│       ├── validators
+│       └── responses
+├── configs
+│   ├── db
+│   ├── env
+│   └── tracing
+├── container
+├── middlewares
+├── mocks
+├── models
+├── repositories
+├── security
+├── services
+└── shared
 ```
+
+| Camada | Responsabilidade |
+| ------ | ---------------- |
+
+### Arquitetura do Software (macro)
 
 ## Projeto em funcionamento
 
-## Como utilizar o projeto
+## Como rodar o projeto
+
+```bash
+< INSTALADORES >
+
+go mod tidy
+
+< INICIADORES >
+
+docker compose up --build
+
+OBS: Se preferir, pode rodar via debug pela sua IDE
+
+< TESTES DE COVERAGE >
+
+go test ./... -v -coverprofile=coverage.out
+go tool cover -func=coverage.out
+```
 
 ## Colaboradores
 
