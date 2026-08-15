@@ -15,6 +15,7 @@
 - [Arquitetura](#arquitetura)
   - [Arquitetura do Código (micro)](#arquitetura-do-código-micro)
   - [Arquitetura do Software (macro)](#arquitetura-do-software-macro)
+- [Endpoints](#endpoints)
 - [Projeto em funcionamento](#projeto-em-funcionamento)
 - [Como rodar o projeto](#como-rodar-o-projeto)
 - [Colaboradores](#colaboradores)
@@ -22,6 +23,13 @@
 ## Descrição do projeto
 
 ### Funcionalidades Principais
+
+> **_Autenticação:_**
+> **_Gerenciamento de Perfis do usuário:_**
+> **_Listagem de Filmes e Séries:_**
+> **_Gerenciamento de Favoritos:_**
+> **_Observabilidade com Jaeger:_**
+> **_Documentação com Swagger:_**
 
 ## Tecnologias
 
@@ -57,6 +65,8 @@
 
 ### Arquitetura do Código (micro)
 
+A estrutura de pastas segue uma abordagem baseada em **Domain-Driven Design (DDD)** e **Arquitetura Limpa**, garantindo um baixo acoplamento e facilitando os testes unitários.
+
 ```
 src/
 ├── api
@@ -73,32 +83,52 @@ src/
 ├── container
 ├── middlewares
 ├── mocks
+│   ├── repositories
+│   └── services
 ├── models
 ├── repositories
+│   ├── http
+│   ├── interfaces
+│   └── sqlite
 ├── security
 ├── services
+│   └── interfaces
 └── shared
 ```
 
 | Camada | Responsabilidade |
 | ------ | ---------------- |
+| API    |                  |
+| Routes |                  |
 
 ### Arquitetura do Software (macro)
 
+A aplicação funciona no modelo Client-Server. O cliente envia requisições HTTP que são roteadas pelo Fiber.
+
+## Endpoints
+
 ## Projeto em funcionamento
+
+Clique na imagem abaixo para assistir ao tutorial em vídeo!
+
+[![Assista ao tutorial](./images/streaming_api.png "Projeto em funcionamento local")](semvideo.com)
+
+**Descrição**: Este vídeo cobre todo o processo para visualizar o projeto em funcionamento, do início ao fim.
 
 ## Como rodar o projeto
 
-```bash
+```
 < INSTALADORES >
 
 go mod tidy
+
 
 < INICIADORES >
 
 docker compose up --build
 
 OBS: Se preferir, pode rodar via debug pela sua IDE
+
 
 < TESTES DE COVERAGE >
 
