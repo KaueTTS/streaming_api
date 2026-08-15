@@ -10,6 +10,7 @@ import (
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 )
 
+// ValidateProfileRequest valida o dto de perfil
 func ValidateProfileRequest(request dto_profile.ProfileRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 

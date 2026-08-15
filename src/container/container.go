@@ -21,7 +21,7 @@ type Container struct {
 func Build(db *gorm.DB, redisClient *redis.Client) *Container {
 	return &Container{
 		AuthController:     buildAuthController(db),
-		ContentController:  buildContentController(),
+		ContentController:  buildContentController(db),
 		FavoriteController: buildFavoriteController(db),
 		ProfileController:  buildProfileController(db),
 		RedisClient:        redisClient,

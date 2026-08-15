@@ -8,6 +8,7 @@ const (
 	InvalidContentGenres          = "with_genres deve conter apenas ids numéricos separados por vírgula ou pipe"
 	InvalidContentLanguage        = "language deve estar no formato ISO, exemplo: pt-BR"
 	InvalidContentYear            = "year deve ser maior que zero quando informado"
+	InvalidContentProfileID       = "profile_id deve ser maior que zero quando informado"
 )
 
 // Erros comuns de query de content

@@ -3,7 +3,7 @@ package shared_constants
 // Campos comuns
 const (
 	ID        = "id"
-	ProfileId = "profile_id"
+	ProfileID = "profile_id"
 )
 
 // Campos de usuário

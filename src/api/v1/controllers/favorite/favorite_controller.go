@@ -59,8 +59,8 @@ func (c *FavoriteController) ListFavorites(ctx *fiber.Ctx) error {
 			shared_errors_favorite.InvalidProfileID,
 			[]dto_shared.DetailErrorDto{
 				{
-					Field:   shared_constants.ProfileId,
-					Value:   ctx.Query(shared_constants.ProfileId),
+					Field:   shared_constants.ProfileID,
+					Value:   ctx.Query(shared_constants.ProfileID),
 					Message: shared_errors_favorite.InvalidProfileID,
 				},
 			},

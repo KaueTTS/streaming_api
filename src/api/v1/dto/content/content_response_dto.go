@@ -16,6 +16,7 @@ type ContentDto struct {
 	Popularity       float64 `json:"popularity"`
 	VoteAverage      float64 `json:"vote_average"`
 	VoteCount        int     `json:"vote_count"`
+	Adult            bool    `json:"adult"`
 }
 
 type ContentResponseDto struct {

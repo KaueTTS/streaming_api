@@ -300,6 +300,11 @@ paths:
         name: type
         required: true
         type: string
+      - description: ID do perfil
+        in: query
+        name: profile_id
+        required: true
+        type: integer
       - default: 1
         description: Número da página
         in: query
@@ -334,6 +339,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
         "502":
           description: Bad Gateway
           schema:
@@ -355,6 +364,11 @@ paths:
         name: type
         required: true
         type: string
+      - description: ID do perfil
+        in: query
+        name: profile_id
+        required: true
+        type: integer
       - description: Termo pesquisado
         in: query
         name: query
@@ -380,6 +394,10 @@ paths:
             $ref: '#/definitions/dto_shared.ErrorDto'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/dto_shared.ErrorDto'
         "502":

@@ -1,6 +1,8 @@
 package v1_controller_content
 
 import (
+	"errors"
+
 	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
 	dto_content "github.com/KaueTTS/streaming_api/src/api/v1/dto/content"
 	responses "github.com/KaueTTS/streaming_api/src/api/v1/responses"
@@ -8,6 +10,7 @@ import (
 	service_interface "github.com/KaueTTS/streaming_api/src/services/interfaces"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	shared_errors_content "github.com/KaueTTS/streaming_api/src/shared/errors/content"
+	shared_errors_profile "github.com/KaueTTS/streaming_api/src/shared/errors/profile"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,6 +29,7 @@ func NewContentController(contentService service_interface.ContentServiceInterfa
 // @Description Lista filmes ou séries usando a integração com a TMDB API
 // @Tags 		contents
 // @Param 		type query string true "Tipo do conteúdo" Enums(movie,tv)
+// @Param 		profile_id query uint true "ID do perfil"
 // @Param 		page query int false "Número da página" default(1)
 // @Param 		sort_by query string false "Ordenação usada pela TMDB. Exemplo: popularity.desc"
 // @Param 		with_genres query string false "IDs de gêneros separados por vírgula"
@@ -34,6 +38,7 @@ func NewContentController(contentService service_interface.ContentServiceInterfa
 // @Success 	200 {object} dto_content.ContentResponseDto
 // @Failure 	400 {object} dto_shared.ErrorDto
 // @Failure 	401 {object} dto_shared.ErrorDto
+// @Failure 	404 {object} dto_shared.ErrorDto
 // @Failure 	502 {object} dto_shared.ErrorDto
 // @Router 		/v1/contents [get]
 // @Security 	BearerAuth
@@ -53,6 +58,10 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 
 	response, err := c.contentService.ListContents(ctx.UserContext(), request)
 	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
 		return responses.BadGateway(ctx, shared_errors_content.FailedToListContents)
 	}
 
@@ -64,12 +73,14 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 // @Description 	Busca filmes ou séries usando a integração com a TMDB API
 // @Tags 			contents
 // @Param 			type query string true "Tipo do conteúdo" Enums(movie,tv)
+// @Param 			profile_id query uint true "ID do perfil"
 // @Param 			query query string true "Termo pesquisado"
 // @Param 			page query int false "Número da página" default(1)
 // @Param 			language query string false "Idioma da resposta. Exemplo: pt-BR"
 // @Success 		200 {object} dto_content.ContentResponseDto
 // @Failure 		400 {object} dto_shared.ErrorDto
 // @Failure 		401 {object} dto_shared.ErrorDto
+// @Failure 		404 {object} dto_shared.ErrorDto
 // @Failure 		502 {object} dto_shared.ErrorDto
 // @Router 			/v1/contents/search [get]
 // @Security 		BearerAuth
@@ -89,6 +100,10 @@ func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
 
 	response, err := c.contentService.SearchContents(ctx.UserContext(), request)
 	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
 		return responses.BadGateway(ctx, shared_errors_content.FailedToSearchContents)
 	}
 

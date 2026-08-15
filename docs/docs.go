@@ -205,6 +205,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "ID do perfil",
+                        "name": "profile_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "default": 1,
                         "description": "Número da página",
                         "name": "page",
@@ -254,6 +261,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
@@ -284,6 +297,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Tipo do conteúdo",
                         "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID do perfil",
+                        "name": "profile_id",
                         "in": "query",
                         "required": true
                     },
@@ -323,6 +343,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }

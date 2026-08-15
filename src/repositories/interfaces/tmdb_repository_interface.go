@@ -7,6 +7,6 @@ import (
 )
 
 type TMDBRepositoryInterface interface {
-	ListContents(ctx context.Context, filters tmdb_dto.ContentListFiltersDto) (tmdb_dto.GetContentResponseDto, error)
-	SearchContents(ctx context.Context, filters tmdb_dto.ContentSearchFiltersDto) (tmdb_dto.GetContentResponseDto, error)
+	ListContents(ctx context.Context, filters tmdb_dto.ContentFiltersDto) (tmdb_dto.GetContentResponseDto, error)
+	SearchContents(ctx context.Context, filters tmdb_dto.ContentFiltersDto) (tmdb_dto.GetContentResponseDto, error)
 }

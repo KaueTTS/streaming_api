@@ -34,25 +34,12 @@ func NewTMDBRepository() *TMDBRepository {
 }
 
 // ListContents lista os conteúdos da TMBD baseado nos filtros passados pelo usuário
-func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentListFiltersDto) (dto.GetContentResponseDto, error) {
+func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentFiltersDto) (dto.GetContentResponseDto, error) {
 	baseURL := fmt.Sprintf("%s/discover/%s", r.baseURL, filters.Type)
 
 	queryParams := url.Values{}
-	addQueryParam(queryParams, "language", filters.Language)
-	addQueryParam(queryParams, "sort_by", filters.SortBy)
-	addQueryParam(queryParams, "with_genres", filters.WithGenres)
-
-	if filters.Page > 0 {
-		queryParams.Set("page", strconv.Itoa(filters.Page))
-	}
-
-	if filters.Year > 0 {
-		switch filters.Type {
-		case shared_constants_content.ContentTypeMovie:
-			queryParams.Set("primary_release_year", strconv.Itoa(filters.Year))
-		case shared_constants_content.ContentTypeTV:
-			queryParams.Set("first_air_date_year", strconv.Itoa(filters.Year))
-		}
+	if err := buildQueryParam(queryParams, filters); err != nil {
+		return dto.GetContentResponseDto{}, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL, nil)
@@ -83,14 +70,12 @@ func (r *TMDBRepository) ListContents(ctx context.Context, filters dto.ContentLi
 }
 
 // SearchContents busca os conteúdos da TMBD baseado nos filtros passados pelo usuário
-func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.ContentSearchFiltersDto) (dto.GetContentResponseDto, error) {
+func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.ContentFiltersDto) (dto.GetContentResponseDto, error) {
 	baseURL := fmt.Sprintf("%s/search/%s", r.baseURL, filters.Type)
-	queryParams := url.Values{}
-	queryParams.Set("query", strings.TrimSpace(filters.Query))
-	addQueryParam(queryParams, "language", filters.Language)
 
-	if filters.Page > 0 {
-		queryParams.Set("page", strconv.Itoa(filters.Page))
+	queryParams := url.Values{}
+	if err := buildQueryParam(queryParams, filters); err != nil {
+		return dto.GetContentResponseDto{}, err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL, nil)
@@ -120,9 +105,41 @@ func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.Content
 	return response, nil
 }
 
-// addQueryParam adiciona parâmetros à query string da requisição
-func addQueryParam(queryParams url.Values, key string, value string) {
-	if value != "" {
-		queryParams.Set(key, value)
+// buildQueryParam monta os parâmetros da query string de requisição
+func buildQueryParam(queryParams url.Values, filters dto.ContentFiltersDto) error {
+	if filters.Query != "" {
+		queryParams.Set("query", strings.TrimSpace(filters.Query))
 	}
+
+	if filters.Page > 0 {
+		queryParams.Set("page", strconv.Itoa(filters.Page))
+	}
+
+	if filters.Language != "" {
+		queryParams.Set("language", filters.Language)
+	}
+
+	if filters.SortBy != "" {
+		queryParams.Set("sort_by", filters.SortBy)
+	}
+
+	if filters.WithGenres != "" {
+		queryParams.Set("with_genres", filters.WithGenres)
+	}
+
+	if filters.Year > 0 {
+		switch filters.Type {
+		case shared_constants_content.ContentTypeMovie:
+			queryParams.Set("primary_release_year", strconv.Itoa(filters.Year))
+		case shared_constants_content.ContentTypeTV:
+			queryParams.Set("first_air_date_year", strconv.Itoa(filters.Year))
+		}
+	}
+
+	queryParams.Set("include_adult", "false")
+	if !filters.IsKids {
+		queryParams.Set("include_adult", "true")
+	}
+
+	return nil
 }
