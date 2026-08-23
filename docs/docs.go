@@ -794,6 +794,9 @@ const docTemplate = `{
         "dto_content.ContentDto": {
             "type": "object",
             "properties": {
+                "adult": {
+                    "type": "boolean"
+                },
                 "backdrop_path": {
                     "type": "string"
                 },

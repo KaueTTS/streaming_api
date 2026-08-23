@@ -46,6 +46,8 @@ definitions:
     type: object
   dto_content.ContentDto:
     properties:
+      adult:
+        type: boolean
       backdrop_path:
         type: string
       description:
