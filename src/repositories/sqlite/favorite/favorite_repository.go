@@ -78,3 +78,25 @@ func (r *FavoriteRepository) CreateFavoriteByProfileID(ctx context.Context, user
 
 	return nil
 }
+
+func (r *FavoriteRepository) DeleteFavoriteByProfileID(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error {
+	if err := r.db.WithContext(ctx).
+		Select("id").
+		Where("id = ? AND user_id = ?", request.ProfileID, userID).
+		Take(&models.Profile{}).Error; err != nil {
+		return err
+	}
+
+	favorite := models.Favorite{
+		UserID:            userID,
+		ProfileID:         request.ProfileID,
+		ContentExternalId: request.ContentExternalID,
+		Type:              request.Type,
+	}
+
+	if err := r.db.WithContext(ctx).Delete(&favorite).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

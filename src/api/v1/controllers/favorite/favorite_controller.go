@@ -2,7 +2,6 @@ package v1_controller_favorite
 
 import (
 	"errors"
-	"fmt"
 
 	controllers_helpers "github.com/KaueTTS/streaming_api/src/api/v1/controllers"
 	dto_favorite "github.com/KaueTTS/streaming_api/src/api/v1/dto/favorite"
@@ -87,8 +86,8 @@ func (c *FavoriteController) ListFavorites(ctx *fiber.Ctx) error {
 }
 
 // AddFavorite 	godoc
-// @Summary 	Adiciona um filme ou série nos favoritos de um perfil
-// @Description
+// @Summary 	Adicionar um filme ou série nos favoritos de um perfil
+// @Description Adiciona um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.
 // @Tags 		favorites
 // @Param 		FavoriteRequestDto body dto_favorite.FavoriteRequestDto true "Corpo da requisição para adicionar um novo favorito"
 // @Success 	201
@@ -134,16 +133,43 @@ func (c *FavoriteController) AddFavorite(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(nil)
 }
 
-// RemoveFavorite godoc
-// @Summary
-// @Description
-// @Tags favorites
-// @Success 200
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/favorites/{id} [delete]
-// @Security BearerAuth
+// RemoveFavorite 	godoc
+// @Summary 		Deletar um filme ou série nos favoritos de um perfil
+// @Description		Deleta um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.
+// @Tags 			favorites
+// @Success 		204
+// @Failure 		400 {object} dto_shared.ErrorDto
+// @Failure 		401 {object} dto_shared.ErrorDto
+// @Failure 		500 {object} dto_shared.ErrorDto
+// @Router 			/v1/favorites/{id} [delete]
+// @Security 		BearerAuth
 func (c *FavoriteController) RemoveFavorite(ctx *fiber.Ctx) error {
-	return fmt.Errorf("não implementado")
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
+	request, details, ok := controllers_helpers.ParseBody[dto_favorite.FavoriteRequestDto](ctx)
+	if !ok {
+		return responses.BadRequest(ctx, shared_errors.InvalidRequestBody, details)
+	}
+
+	if errDetails := validator_favorite.ValidateFavoriteRequest(request); len(errDetails) > 0 {
+		return responses.BadRequest(
+			ctx,
+			shared_errors_favorite.InvalidCreateFavoriteData,
+			errDetails,
+		)
+	}
+
+	err := c.favoriteService.DeleteFavorite(ctx.UserContext(), userID, request)
+	if err != nil {
+		if errors.Is(err, shared_errors.ErrProfileNotFound) {
+			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
+		return responses.InternalServerError(ctx, shared_errors_favorite.FailedToCreateFavorite)
+	}
+
+	return ctx.Status(fiber.StatusNoContent).JSON(nil)
 }

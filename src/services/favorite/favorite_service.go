@@ -93,6 +93,19 @@ func (s *FavoriteService) AddFavorite(ctx context.Context, userID uint, request 
 	return nil
 }
 
+func (s *FavoriteService) DeleteFavorite(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error {
+	err := s.FavoriteRepositoryInterface.DeleteFavoriteByProfileID(ctx, userID, request)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return shared_errors.ErrProfileNotFound
+		}
+
+		return err
+	}
+
+	return nil
+}
+
 func mapTMDBFavoriteContent(content tmdb_dto.ContentDto, contentType string) dto_content.ContentDto {
 	return dto_content.ContentDto{
 		ExternalID:       content.ID,

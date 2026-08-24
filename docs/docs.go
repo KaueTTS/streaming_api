@@ -442,10 +442,11 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Adiciona um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.",
                 "tags": [
                     "favorites"
                 ],
-                "summary": "Adiciona um filme ou série nos favoritos de um perfil",
+                "summary": "Adicionar um filme ou série nos favoritos de um perfil",
                 "parameters": [
                     {
                         "description": "Corpo da requisição para adicionar um novo favorito",
@@ -501,12 +502,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Deleta um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.",
                 "tags": [
                     "favorites"
                 ],
+                "summary": "Deletar um filme ou série nos favoritos de um perfil",
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request",
