@@ -32,11 +32,11 @@ O projeto incorpora boas práticas de arquitetura, separando responsabilidades e
 
 ### Funcionalidades Principais
 
-> **_Autenticação:_**
-> **_Gerenciamento de Perfis do usuário:_**
-> **_Listagem de Filmes e Séries:_**
-> **_Gerenciamento de Favoritos:_**
-> **_Observabilidade com Jaeger:_**
+> **_Autenticação:_** <br>
+> **_Gerenciamento de Perfis do usuário:_** <br>
+> **_Listagem de Filmes e Séries:_** <br>
+> **_Gerenciamento de Favoritos:_** <br>
+> **_Observabilidade com Jaeger:_** <br>
 > **_Documentação com Swagger:_**
 
 ## Tecnologias
@@ -112,6 +112,15 @@ src/
 ### Arquitetura do Software (macro)
 
 A aplicação funciona no modelo Client-Server. O cliente envia requisições HTTP que são roteadas pelo Fiber.
+
+graph TD
+    Client[Cliente/Frontend] -->|HTTP Request| Fiber[Rotas - Fiber]
+    Fiber --> Middlewares[Middlewares JWT/Rate Limit]
+    Middlewares --> Controller[Controller]
+    Controller --> Service[Service - Regras de Negócio]
+    Service --> Repository[Repository - Persistência]
+    Repository --> SQLite[(SQLite - Dados Opcionais)]
+    Repository --> Redis[(Redis - Cache)]
 
 ## Endpoints
 
