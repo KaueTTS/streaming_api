@@ -16,11 +16,19 @@
   - [Arquitetura do Código (micro)](#arquitetura-do-código-micro)
   - [Arquitetura do Software (macro)](#arquitetura-do-software-macro)
 - [Endpoints](#endpoints)
+  - [Autenticação](#autenticação)
+  - [Perfis](#perfis)
+  - [Conteúdos](#conteúdos)
+  - [Favoritos](#favoritos)
 - [Projeto em funcionamento](#projeto-em-funcionamento)
 - [Como rodar o projeto](#como-rodar-o-projeto)
 - [Colaboradores](#colaboradores)
 
 ## Descrição do projeto
+
+O Streaming API é uma solução backend em Go para gestão de uma plataforma de streaming. A aplicação foi desenvolvida para oferecer uma API REST confiável, fácil de evoluir e preparada para uso em ambientes locais.
+
+O projeto incorpora boas práticas de arquitetura, separando responsabilidades em camadas bem definidas, como rotas, controladores, serviços, repositórios e modelos. Além disso, a API conta com autenticação via JWT, proteção contra excesso de requisições, integração com SQLite e Redis, documentação com Swagger e monitoramento de operações por tracing.
 
 ### Funcionalidades Principais
 
@@ -106,6 +114,46 @@ src/
 A aplicação funciona no modelo Client-Server. O cliente envia requisições HTTP que são roteadas pelo Fiber.
 
 ## Endpoints
+
+A API está organizada sob o prefixo `/v1` e, em sua maior parte, utiliza autenticação por token JWT no header `Authorization`.
+
+### Autenticação
+
+| Método | Rota | Descrição |
+| ------ | ---- | --------- |
+| `POST` | `/v1/auth/register` | Cria um novo usuário na aplicação |
+| `POST` | `/v1/auth/login` | Realiza login e retorna o token de acesso |
+| `GET`  | `/v1/auth/me` | Retorna os dados do usuário autenticado |
+
+### Perfis
+
+> Todos os endpoints abaixo exigem autenticação.
+
+| Método | Rota | Descrição |
+| ------ | ---- | --------- |
+| `GET` | `/v1/profiles` | Lista os perfis do usuário autenticado |
+| `POST` | `/v1/profiles` | Cria um novo perfil associado ao usuário |
+| `PUT` | `/v1/profiles/:id` | Atualiza um perfil específico |
+| `DELETE` | `/v1/profiles/:id` | Remove um perfil do usuário |
+
+### Conteúdos
+
+> Todos os endpoints abaixo exigem autenticação.
+
+| Método | Rota | Descrição |
+| ------ | ---- | --------- |
+| `GET` | `/v1/contents` | Lista os conteúdos disponíveis para o usuário autenticado |
+| `GET` | `/v1/contents/search` | Busca conteúdos por termo ou filtro específico |
+
+### Favoritos
+
+> Todos os endpoints abaixo exigem autenticação.
+
+| Método | Rota | Descrição |
+| ------ | ---- | --------- |
+| `GET` | `/v1/favorites` | Lista os itens favoritos do usuário |
+| `POST` | `/v1/favorites` | Adiciona um item à lista de favoritos |
+| `DELETE` | `/v1/favorites/:id` | Remove um item favorito pelo identificador |
 
 ## Projeto em funcionamento
 
