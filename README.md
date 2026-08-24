@@ -33,11 +33,11 @@ O projeto incorpora boas práticas de arquitetura, separando responsabilidades e
 ### Funcionalidades Principais
 
 > **_Autenticação:_** Registro de novos usuários e login seguro utilizando tokens JWT.<br>
-> **_Gerenciamento de Perfis do usuário:_** <br>
-> **_Listagem de Filmes e Séries:_** <br>
-> **_Gerenciamento de Favoritos:_** <br>
-> **_Observabilidade com Jaeger:_** <br>
-> **_Documentação com Swagger:_**
+> **_Gerenciamento de Perfis do usuário:_** Criação, edição, exclusão e listagem de perfis associados à conta principal.<br>
+> **_Listagem de Filmes e Séries:_** Consulta ao catálogo de conteúdos de streaming, incluindo sistema de buscas e filtros.<br>
+> **_Gerenciamento de Favoritos:_** Funcionalidade para adicionar, listar e remover conteúdos da lista de favoritos do perfil.<br>
+> **_Observabilidade com Jaeger:_** Rastreamento de requisições (tracing distribuído) para monitorar a saúde e o desempenho da API.<br>
+> **_Documentação com Swagger:_** Interface amigável para exploração, entendimento e realização de testes nos endpoints disponíveis.
 
 ## Tecnologias
 
@@ -106,8 +106,21 @@ src/
 
 | Camada | Responsabilidade |
 | ------ | ---------------- |
-| API    |                  |
-| Routes |                  |
+| `api` | Inicializa a aplicação Fiber, configura middlewares e registra as rotas da API. |
+| `routes` | Define os endpoints e conecta cada rota ao controlador correspondente. |
+| `controllers` | Recebe as requisições HTTP, trata parâmetros e delega a lógica para os serviços. |
+| `dto` | Estruturas de entrada e saída para transporte de dados entre camadas. |
+| `validators` | Valida payloads, campos obrigatórios e regras de negócio básicas antes do processamento. |
+| `responses` | Padroniza as respostas da API em formato JSON e erros estruturados. |
+| `configs` | Centraliza configuração de variáveis de ambiente, banco de dados, cache e tracing. |
+| `container` | Monta e injeta as dependências entre controladores, serviços e repositórios. |
+| `middlewares` | Implementa autenticação, autorização e interceptadores de requisição. |
+| `models` | Representa as entidades do domínio e as estruturas principais do sistema. |
+| `repositories` | Gerencia acesso a dados em SQLite, Redis e integrações externas. |
+| `services` | Contém a lógica de negócio da aplicação e orquestra operações entre domínio e persistência. |
+| `security` | Responsável por JWT, hashing de senha e autenticação/segurança do usuário. |
+| `shared` | Reúne constantes, erros, normalizações e utilidades reutilizáveis. |
+| `mocks` | Simula dependências para testes unitários, facilitando isolamento e validação. |
 
 ### Arquitetura do Software (macro)
 
@@ -115,7 +128,18 @@ A aplicação funciona no modelo Client-Server. O cliente envia requisições HT
 
 ```Mermaid
 graph TD
-    
+    Client([Cliente HTTP]) -->|Requisição REST| API[Fiber API Gateway]
+
+    subgraph Backend [Streaming API]
+      API -->|Validação & Rotas| Controllers[Controllers]
+      Controllers -->|Regras de Negócios| Services[Services]
+      Services -->|Persistência| Repositories{Repositories}
+    end
+
+    Repositories -->|Leitura/Escrita| DB[(SQLite DB)]
+    Repositories -->|Cache de Sessão/Dados| Cache[(Redis)]
+    API -.->|Geração de métricas| Tracing[Jaeger / OpenTelemetry]
+
 ```
 
 ## Endpoints
@@ -170,26 +194,21 @@ Clique na imagem abaixo para assistir ao tutorial em vídeo!
 
 ## Como rodar o projeto
 
-```
-< INSTALADORES >
-
+```bash
+# < INSTALADORES >
 go mod tidy
 
 
-< INICIADORES >
-
-docker compose up --build
-
-OBS: Se preferir, pode rodar via debug pela sua IDE
+# < INICIADORES >
+docker compose up --build # OBS: Se preferir, pode rodar via debug pela sua IDE
 
 
-< TESTES DE COVERAGE >
-
+# < TESTES DE COVERAGE >
 go test ./... -v -coverprofile=coverage.out
 go tool cover -func=coverage.out
 ```
 
 ## Colaboradores
 
-| [<img src="https://avatars.githubusercontent.com/u/69527468?v=4" width=115><br><sub>Kauê Bertaze de Oliveira</sub>](https://github.com/KaueTTS)<br><sub>Developer Full Stack</sub> |
+| [<img src="https://avatars.githubusercontent.com/u/69527468?v=4" width=115><br><sub>Kauê Bertaze de Oliveira</sub>](https://github.com/KaueTTS)<br><sub>Software Engineer</sub> |
 | :---:
