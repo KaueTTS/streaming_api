@@ -32,7 +32,7 @@ O projeto incorpora boas práticas de arquitetura, separando responsabilidades e
 
 ### Funcionalidades Principais
 
-> **_Autenticação:_** <br>
+> **_Autenticação:_** Registro de novos usuários e login seguro utilizando tokens JWT.<br>
 > **_Gerenciamento de Perfis do usuário:_** <br>
 > **_Listagem de Filmes e Séries:_** <br>
 > **_Gerenciamento de Favoritos:_** <br>
@@ -113,14 +113,10 @@ src/
 
 A aplicação funciona no modelo Client-Server. O cliente envia requisições HTTP que são roteadas pelo Fiber.
 
+```Mermaid
 graph TD
-    Client[Cliente/Frontend] -->|HTTP Request| Fiber[Rotas - Fiber]
-    Fiber --> Middlewares[Middlewares JWT/Rate Limit]
-    Middlewares --> Controller[Controller]
-    Controller --> Service[Service - Regras de Negócio]
-    Service --> Repository[Repository - Persistência]
-    Repository --> SQLite[(SQLite - Dados Opcionais)]
-    Repository --> Redis[(Redis - Cache)]
+    
+```
 
 ## Endpoints
 
