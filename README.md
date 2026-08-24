@@ -126,7 +126,7 @@ src/
 
 A aplicação funciona no modelo Client-Server. O cliente envia requisições HTTP que são roteadas pelo Fiber.
 
-```Mermaid
+```mermaid
 graph TD
     Client([Cliente HTTP]) -->|Requisição REST| API[Fiber API Gateway]
 
@@ -139,7 +139,6 @@ graph TD
     Repositories -->|Leitura/Escrita| DB[(SQLite DB)]
     Repositories -->|Cache de Sessão/Dados| Cache[(Redis)]
     API -.->|Geração de métricas| Tracing[Jaeger / OpenTelemetry]
-
 ```
 
 ## Endpoints
