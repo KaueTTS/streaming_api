@@ -88,10 +88,8 @@ definitions:
     type: object
   dto_favorite.FavoriteDto:
     properties:
-      content_id:
-        type: integer
-      content_type:
-        type: string
+      content:
+        $ref: '#/definitions/dto_content.ContentDto'
       created_at:
         type: string
       id:
@@ -99,6 +97,15 @@ definitions:
       profile_id:
         type: integer
       updated_at:
+        type: string
+    type: object
+  dto_favorite.FavoriteRequestDto:
+    properties:
+      content_external_id:
+        type: integer
+      profile_id:
+        type: integer
+      type:
         type: string
     type: object
   dto_favorite.FavoriteResponseDto:
@@ -421,6 +428,10 @@ paths:
         name: profile_id
         required: true
         type: integer
+      - description: 'Idioma da resposta. Exemplo: pt-BR'
+        in: query
+        name: language
+        type: string
       - default: 1
         description: Número da página
         in: query
@@ -458,9 +469,16 @@ paths:
       tags:
       - favorites
     post:
+      parameters:
+      - description: Corpo da requisição para adicionar um novo favorito
+        in: body
+        name: FavoriteRequestDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto_favorite.FavoriteRequestDto'
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "400":
           description: Bad Request
           schema:
@@ -469,12 +487,21 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/dto_shared.ErrorDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto_shared.ErrorDto'
       security:
       - BearerAuth: []
+      summary: Adiciona um filme ou série nos favoritos de um perfil
       tags:
       - favorites
   /v1/favorites/{id}:

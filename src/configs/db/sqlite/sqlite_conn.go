@@ -19,7 +19,9 @@ func Init() (*gorm.DB, error) {
 		return nil, fmt.Errorf("erro ao criar diretório do banco de dados: %w", err)
 	}
 
-	db, err := gorm.Open(sqlite.Open(env.SQLiteDatabaseURL), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(env.SQLiteDatabaseURL), &gorm.Config{
+		TranslateError: true,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("erro ao conectar no sqlite: %w", err)
 	}

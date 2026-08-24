@@ -2,8 +2,9 @@ package shared_constants
 
 // Campos comuns
 const (
-	ID        = "id"
-	ProfileID = "profile_id"
+	ID                = "id"
+	ProfileID         = "profile_id"
+	ContentExternalID = "content_external_id"
 )
 
 // Campos de usuário

@@ -9,4 +9,5 @@ import (
 type TMDBRepositoryInterface interface {
 	ListContents(ctx context.Context, filters tmdb_dto.ContentFiltersDto) (tmdb_dto.GetContentResponseDto, error)
 	SearchContents(ctx context.Context, filters tmdb_dto.ContentFiltersDto) (tmdb_dto.GetContentResponseDto, error)
+	GetContentByID(ctx context.Context, contentType string, contentExternalID int, language string) (tmdb_dto.ContentDto, error)
 }

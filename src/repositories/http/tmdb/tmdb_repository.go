@@ -105,6 +105,41 @@ func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.Content
 	return response, nil
 }
 
+func (r *TMDBRepository) GetContentByID(ctx context.Context, contentType string, contentExternalID int, language string) (dto.ContentDto, error) {
+	baseURL := fmt.Sprintf("%s/%s/%d", r.baseURL, contentType, contentExternalID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL, nil)
+	if err != nil {
+		return dto.ContentDto{}, err
+	}
+
+	queryParams := url.Values{}
+	if strings.TrimSpace(language) != "" {
+		queryParams.Set("language", strings.TrimSpace(language))
+	}
+	req.URL.RawQuery = queryParams.Encode()
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", r.token))
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := r.httpClient.Do(req)
+	if err != nil {
+		return dto.ContentDto{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return dto.ContentDto{}, fmt.Errorf("código de status inesperado: %d", resp.StatusCode)
+	}
+
+	var response dto.ContentDto
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return dto.ContentDto{}, err
+	}
+
+	return response, nil
+}
+
 // buildQueryParam monta os parâmetros da query string de requisição
 func buildQueryParam(queryParams url.Values, filters dto.ContentFiltersDto) error {
 	if filters.Query != "" {

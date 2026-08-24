@@ -383,6 +383,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Idioma da resposta. Exemplo: pt-BR",
+                        "name": "language",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 1,
                         "description": "Número da página",
@@ -439,9 +445,21 @@ const docTemplate = `{
                 "tags": [
                     "favorites"
                 ],
+                "summary": "Adiciona um filme ou série nos favoritos de um perfil",
+                "parameters": [
+                    {
+                        "description": "Corpo da requisição para adicionar um novo favorito",
+                        "name": "FavoriteRequestDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto_favorite.FavoriteRequestDto"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "201": {
+                        "description": "Created"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -451,6 +469,18 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
@@ -858,11 +888,8 @@ const docTemplate = `{
         "dto_favorite.FavoriteDto": {
             "type": "object",
             "properties": {
-                "content_id": {
-                    "type": "integer"
-                },
-                "content_type": {
-                    "type": "string"
+                "content": {
+                    "$ref": "#/definitions/dto_content.ContentDto"
                 },
                 "created_at": {
                     "type": "string"
@@ -874,6 +901,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto_favorite.FavoriteRequestDto": {
+            "type": "object",
+            "properties": {
+                "content_external_id": {
+                    "type": "integer"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "type": {
                     "type": "string"
                 }
             }
