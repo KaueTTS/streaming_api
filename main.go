@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "github.com/KaueTTS/streaming_api/docs"
 	api "github.com/KaueTTS/streaming_api/src/api"
@@ -61,7 +62,10 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("erro ao inicializar tracing: %w", err)
 	}
 	defer func() {
-		if err := tracerProvider.Shutdown(ctx); err != nil {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := tracerProvider.Shutdown(shutdownCtx); err != nil {
 			slog.Error("Erro ao finalizar tracing", "erro", err)
 		}
 	}()
