@@ -105,6 +105,7 @@ func (r *TMDBRepository) SearchContents(ctx context.Context, filters dto.Content
 	return response, nil
 }
 
+// GetContentByID busca um conteúdo da TMBD baseado no tipo, ID externo e idioma passados pelo usuário
 func (r *TMDBRepository) GetContentByID(ctx context.Context, contentType string, contentExternalID int, language string) (dto.ContentDto, error) {
 	baseURL := fmt.Sprintf("%s/%s/%d", r.baseURL, contentType, contentExternalID)
 

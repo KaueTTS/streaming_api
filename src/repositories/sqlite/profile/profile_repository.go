@@ -103,19 +103,6 @@ func (r *ProfileRepository) Delete(ctx context.Context, userID, profileID uint) 
 	return nil
 }
 
-// FindProfileByID busca um perfil pelo id, sem verificar se o perfil pertence ao usuário
-func (r *ProfileRepository) FindProfileByID(ctx context.Context, profileID uint) (*models.Profile, error) {
-	var profile models.Profile
-
-	if err := r.db.WithContext(ctx).
-		Where("id = ?", profileID).
-		First(&profile).Error; err != nil {
-		return nil, err
-	}
-
-	return &profile, nil
-}
-
 // FindProfileByUserIDAndID busca um perfil pelo id, verificando se pertence ao usuário.
 func (r *ProfileRepository) FindProfileByUserIDAndID(ctx context.Context, userID, profileID uint) (*models.Profile, error) {
 	var profile models.Profile

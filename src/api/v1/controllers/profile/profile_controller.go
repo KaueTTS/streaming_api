@@ -65,6 +65,10 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 		)
 	}
 
+	if details := validator_profile.ValidateProfilePagination(pagination); len(details) > 0 {
+		return responses.BadRequest(ctx, shared_errors.InvalidQueryParameters, details)
+	}
+
 	page, perPage := shared_normalizers.NormalizePagination(pagination)
 
 	response, err := c.profileService.ListProfiles(ctx.UserContext(), userID, page, perPage)

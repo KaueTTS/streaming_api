@@ -211,42 +211,6 @@ func TestDelete(t *testing.T) {
 	})
 }
 
-func TestFindProfileByID(t *testing.T) {
-	t.Run("should list only selected profile", func(t *testing.T) {
-		db := setupProfileRepositoryTestDB(t)
-		repository := repository_sqlite_profile.NewProfileRepository(db)
-
-		user := createProfileTestUser(t, db, "John Doe", "john@example.com")
-		profile := createProfileTestProfile(t, db, user.ID, "Main", false)
-
-		foundProfile, err := repository.FindProfileByID(
-			context.Background(),
-			profile.ID,
-		)
-
-		require.NoError(t, err)
-		require.NotNil(t, foundProfile)
-
-		assert.Equal(t, profile.ID, foundProfile.ID)
-		assert.Equal(t, profile.UserID, foundProfile.UserID)
-		assert.Equal(t, profile.Name, foundProfile.Name)
-		assert.Equal(t, profile.IsKids, foundProfile.IsKids)
-	})
-
-	t.Run("should return error when profile does not exist", func(t *testing.T) {
-		db := setupProfileRepositoryTestDB(t)
-		repository := repository_sqlite_profile.NewProfileRepository(db)
-
-		foundProfile, err := repository.FindProfileByID(
-			context.Background(),
-			999,
-		)
-
-		assert.Nil(t, foundProfile)
-		assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
-	})
-}
-
 func TestFindProfileByUserIDAndID(t *testing.T) {
 	t.Run("should find profile when it belongs to user", func(t *testing.T) {
 		db := setupProfileRepositoryTestDB(t)
