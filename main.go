@@ -88,7 +88,7 @@ func run(ctx context.Context) error {
 
 	// Inicialização da API
 	app := api.Init(db, redisClient)
-	if err := api.Listen(app); err != nil {
+	if err := api.Listen(ctx, app); err != nil {
 		return fmt.Errorf("erro ao iniciar api: %w", err)
 	}
 

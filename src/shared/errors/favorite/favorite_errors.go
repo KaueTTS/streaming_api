@@ -5,6 +5,7 @@ const (
 	FailedToListFavorites  = "erro ao listar favoritos"
 	FailedToCreateFavorite = "erro ao criar favorito"
 	FailedToDeleteFavorite = "erro ao deletar favorito"
+	FavoriteNotFound       = "favorito não encontrado"
 	InvalidProfileID       = "id do perfil inválido"
 	FavoriteAlreadyExists  = "Conteúdo já adicionado aos favoritos"
 )

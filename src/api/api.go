@@ -1,8 +1,10 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	route_auth "github.com/KaueTTS/streaming_api/src/api/routes/auth"
 	route_content "github.com/KaueTTS/streaming_api/src/api/routes/content"
@@ -58,9 +60,32 @@ func Init(db *gorm.DB, redisClient *redis.Client) *fiber.App {
 	return app
 }
 
-// Listen inicia o servidor na porta definida em env.Port
-func Listen(app *fiber.App) error {
-	return app.Listen(fmt.Sprintf(":%s", env.Port))
+// Listen inicia o servidor na porta definida em env.Port e encerra o Fiber
+// quando o contexto da aplicação é cancelado.
+func Listen(ctx context.Context, app *fiber.App) error {
+	serverErrors := make(chan error, 1)
+
+	go func() {
+		serverErrors <- app.Listen(fmt.Sprintf(":%s", env.Port))
+	}()
+
+	select {
+	case err := <-serverErrors:
+		return err
+	case <-ctx.Done():
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := app.ShutdownWithContext(shutdownCtx); err != nil {
+			return fmt.Errorf("erro ao finalizar api: %w", err)
+		}
+
+		if err := <-serverErrors; err != nil {
+			return fmt.Errorf("erro ao finalizar servidor: %w", err)
+		}
+
+		return nil
+	}
 }
 
 // injectRoutes injeta as rotas no aplicativo.

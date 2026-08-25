@@ -103,6 +103,10 @@ func (s *FavoriteService) DeleteFavorite(ctx context.Context, userID uint, reque
 			return shared_errors.ErrProfileNotFound
 		}
 
+		if errors.Is(err, shared_errors.ErrFavoriteNotFound) {
+			return shared_errors.ErrFavoriteNotFound
+		}
+
 		return err
 	}
 

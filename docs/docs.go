@@ -532,6 +532,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {

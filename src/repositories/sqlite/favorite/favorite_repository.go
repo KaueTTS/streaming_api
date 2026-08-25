@@ -5,6 +5,7 @@ import (
 
 	dto_favorite "github.com/KaueTTS/streaming_api/src/api/v1/dto/favorite"
 	models "github.com/KaueTTS/streaming_api/src/models"
+	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	"gorm.io/gorm"
 )
 
@@ -89,7 +90,7 @@ func (r *FavoriteRepository) DeleteFavoriteByProfileID(ctx context.Context, user
 		return err
 	}
 
-	if err := r.db.WithContext(ctx).
+	result := r.db.WithContext(ctx).
 		Where(
 			"user_id = ? AND profile_id = ? AND content_external_id = ? AND type = ?",
 			userID,
@@ -97,8 +98,14 @@ func (r *FavoriteRepository) DeleteFavoriteByProfileID(ctx context.Context, user
 			request.ContentExternalID,
 			request.Type,
 		).
-		Delete(&models.Favorite{}).Error; err != nil {
-		return err
+		Unscoped().
+		Delete(&models.Favorite{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return shared_errors.ErrFavoriteNotFound
 	}
 
 	return nil

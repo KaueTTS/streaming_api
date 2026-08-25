@@ -141,6 +141,7 @@ func (c *FavoriteController) AddFavorite(ctx *fiber.Ctx) error {
 // @Success 		204
 // @Failure 		400 {object} dto_shared.ErrorDto
 // @Failure 		401 {object} dto_shared.ErrorDto
+// @Failure 		404 {object} dto_shared.ErrorDto
 // @Failure 		500 {object} dto_shared.ErrorDto
 // @Router 			/v1/favorites [delete]
 // @Security 		BearerAuth
@@ -167,6 +168,10 @@ func (c *FavoriteController) RemoveFavorite(ctx *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
+		}
+
+		if errors.Is(err, shared_errors.ErrFavoriteNotFound) {
+			return responses.NotFound(ctx, shared_errors_favorite.FavoriteNotFound)
 		}
 
 		return responses.InternalServerError(ctx, shared_errors_favorite.FailedToDeleteFavorite)

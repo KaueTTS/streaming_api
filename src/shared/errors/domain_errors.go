@@ -16,6 +16,7 @@ var (
 	ErrProfileLimitReached   = errors.New(shared_errors_profile.ProfileLimitReached)
 	ErrProfileNotFound       = errors.New(shared_errors_profile.ProfileNotFound)
 	ErrFavoriteAlreadyExists = errors.New(shared_errors_favorite.FavoriteAlreadyExists)
+	ErrFavoriteNotFound      = errors.New(shared_errors_favorite.FavoriteNotFound)
 	ErrUserNotFound          = errors.New(shared_errors_auth.UserNotFound)
 )
 
