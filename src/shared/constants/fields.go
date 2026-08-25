@@ -19,7 +19,7 @@ const (
 	Type     = "type"
 	Query    = "query"
 	SortBy   = "sort_by"
-	Genre    = "genre"
+	Genre    = "with_genres"
 	Language = "language"
 	Year     = "year"
 )

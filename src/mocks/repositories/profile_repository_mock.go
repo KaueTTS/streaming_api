@@ -38,5 +38,12 @@ func (m *ProfileRepositoryMock) Delete(ctx context.Context, userID, profileID ui
 
 func (m *ProfileRepositoryMock) FindProfileByID(ctx context.Context, profileID uint) (*models.Profile, error) {
 	args := m.Called(ctx, profileID)
-	return args.Get(0).(*models.Profile), args.Error(1)
+	profile, _ := args.Get(0).(*models.Profile)
+	return profile, args.Error(1)
+}
+
+func (m *ProfileRepositoryMock) FindProfileByUserIDAndID(ctx context.Context, userID, profileID uint) (*models.Profile, error) {
+	args := m.Called(ctx, userID, profileID)
+	profile, _ := args.Get(0).(*models.Profile)
+	return profile, args.Error(1)
 }

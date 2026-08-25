@@ -247,6 +247,35 @@ func TestFindProfileByID(t *testing.T) {
 	})
 }
 
+func TestFindProfileByUserIDAndID(t *testing.T) {
+	t.Run("should find profile when it belongs to user", func(t *testing.T) {
+		db := setupProfileRepositoryTestDB(t)
+		repository := repository_sqlite_profile.NewProfileRepository(db)
+		user := createProfileTestUser(t, db, "John Doe", "john@example.com")
+		profile := createProfileTestProfile(t, db, user.ID, "Main", false)
+
+		foundProfile, err := repository.FindProfileByUserIDAndID(context.Background(), user.ID, profile.ID)
+
+		require.NoError(t, err)
+		require.NotNil(t, foundProfile)
+		assert.Equal(t, profile.ID, foundProfile.ID)
+		assert.Equal(t, user.ID, foundProfile.UserID)
+	})
+
+	t.Run("should return error when profile belongs to another user", func(t *testing.T) {
+		db := setupProfileRepositoryTestDB(t)
+		repository := repository_sqlite_profile.NewProfileRepository(db)
+		user := createProfileTestUser(t, db, "John Doe", "john@example.com")
+		otherUser := createProfileTestUser(t, db, "Jane Doe", "jane@example.com")
+		profile := createProfileTestProfile(t, db, otherUser.ID, "Main", false)
+
+		foundProfile, err := repository.FindProfileByUserIDAndID(context.Background(), user.ID, profile.ID)
+
+		assert.Nil(t, foundProfile)
+		assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+	})
+}
+
 func setupProfileRepositoryTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
 

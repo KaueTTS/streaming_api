@@ -9,6 +9,7 @@ import (
 	validator_content "github.com/KaueTTS/streaming_api/src/api/v1/validators"
 	service_interface "github.com/KaueTTS/streaming_api/src/services/interfaces"
 	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
+	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 	shared_errors_content "github.com/KaueTTS/streaming_api/src/shared/errors/content"
 	shared_errors_profile "github.com/KaueTTS/streaming_api/src/shared/errors/profile"
 	"github.com/gofiber/fiber/v2"
@@ -43,6 +44,11 @@ func NewContentController(contentService service_interface.ContentServiceInterfa
 // @Router 		/v1/contents [get]
 // @Security 	BearerAuth
 func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
 	request, details, ok := controllers_helpers.ParseQuery[dto_content.ContentListRequestDto](ctx)
 	if !ok {
 		return responses.BadRequest(ctx, shared_errors.InvalidQueryParameters, details)
@@ -56,7 +62,7 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.contentService.ListContents(ctx.UserContext(), request)
+	response, err := c.contentService.ListContents(ctx.UserContext(), userID, request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
@@ -85,6 +91,11 @@ func (c *ContentController) ListContents(ctx *fiber.Ctx) error {
 // @Router 			/v1/contents/search [get]
 // @Security 		BearerAuth
 func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
+	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
+	if !ok {
+		return responses.Unauthorized(ctx, shared_errors_auth.InvalidToken)
+	}
+
 	request, details, ok := controllers_helpers.ParseQuery[dto_content.ContentSearchRequestDto](ctx)
 	if !ok {
 		return responses.BadRequest(ctx, shared_errors.InvalidQueryParameters, details)
@@ -98,7 +109,7 @@ func (c *ContentController) SearchContents(ctx *fiber.Ctx) error {
 		)
 	}
 
-	response, err := c.contentService.SearchContents(ctx.UserContext(), request)
+	response, err := c.contentService.SearchContents(ctx.UserContext(), userID, request)
 	if err != nil {
 		if errors.Is(err, shared_errors.ErrProfileNotFound) {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)

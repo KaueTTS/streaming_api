@@ -30,10 +30,13 @@ func NewContentService(
 }
 
 // ListContents lista os conteúdos da TMDB baseado nos filtros passados pelo usuário
-func (s *ContentService) ListContents(ctx context.Context, request dto_content.ContentListRequestDto) (dto_content.ContentResponseDto, error) {
-	profile, err := s.ProfileRepositoryInterface.FindProfileByID(ctx, request.ProfileID)
+func (s *ContentService) ListContents(ctx context.Context, userID uint, request dto_content.ContentListRequestDto) (dto_content.ContentResponseDto, error) {
+	profile, err := s.ProfileRepositoryInterface.FindProfileByUserIDAndID(ctx, userID, request.ProfileID)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return dto_content.ContentResponseDto{}, shared_errors.ErrProfileNotFound
+	}
+	if err != nil {
+		return dto_content.ContentResponseDto{}, err
 	}
 
 	filters := tmdb_dto.ContentFiltersDto{
@@ -55,12 +58,21 @@ func (s *ContentService) ListContents(ctx context.Context, request dto_content.C
 }
 
 // SearchContents busca os conteúdos da TMDB baseado nos filtros passados pelo usuário
-func (s *ContentService) SearchContents(ctx context.Context, request dto_content.ContentSearchRequestDto) (dto_content.ContentResponseDto, error) {
+func (s *ContentService) SearchContents(ctx context.Context, userID uint, request dto_content.ContentSearchRequestDto) (dto_content.ContentResponseDto, error) {
+	profile, err := s.ProfileRepositoryInterface.FindProfileByUserIDAndID(ctx, userID, request.ProfileID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return dto_content.ContentResponseDto{}, shared_errors.ErrProfileNotFound
+	}
+	if err != nil {
+		return dto_content.ContentResponseDto{}, err
+	}
+
 	filters := tmdb_dto.ContentFiltersDto{
 		Type:     shared_normalizers.NormalizeString(request.Type),
 		Page:     shared_normalizers.NormalizePage(request.Page),
 		Language: strings.TrimSpace(request.Language),
 		Query:    strings.TrimSpace(request.Query),
+		IsKids:   profile.IsKids,
 	}
 
 	response, err := s.TMDBRepositoryInterface.SearchContents(ctx, filters)
