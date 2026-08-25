@@ -493,9 +493,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/v1/favorites/{id}": {
+            },
             "delete": {
                 "security": [
                     {
@@ -507,6 +505,17 @@ const docTemplate = `{
                     "favorites"
                 ],
                 "summary": "Deletar um filme ou série nos favoritos de um perfil",
+                "parameters": [
+                    {
+                        "description": "Corpo da requisicao para remover um favorito",
+                        "name": "FavoriteRequestDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto_favorite.FavoriteRequestDto"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"

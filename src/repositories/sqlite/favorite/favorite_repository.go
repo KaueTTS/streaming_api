@@ -18,7 +18,7 @@ func NewFavoriteRepository(db *gorm.DB) *FavoriteRepository {
 	}
 }
 
-// FindByProfileID busca os favoritos de um perfil, verificando se o perfil pertence ao usuário
+// FindFavoriteByProfileID busca os favoritos de um perfil do usuario.
 func (r *FavoriteRepository) FindFavoriteByProfileID(ctx context.Context, userID, profileID uint, page, perPage int) ([]models.Favorite, int64, error) {
 	var profileCount int64
 
@@ -57,6 +57,7 @@ func (r *FavoriteRepository) FindFavoriteByProfileID(ctx context.Context, userID
 	return favorites, total, nil
 }
 
+// CreateFavoriteByProfileID cria um favorito em um perfil do usuario.
 func (r *FavoriteRepository) CreateFavoriteByProfileID(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error {
 	if err := r.db.WithContext(ctx).
 		Select("id").
@@ -79,6 +80,7 @@ func (r *FavoriteRepository) CreateFavoriteByProfileID(ctx context.Context, user
 	return nil
 }
 
+// DeleteFavoriteByProfileID remove um favorito de um perfil do usuario.
 func (r *FavoriteRepository) DeleteFavoriteByProfileID(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error {
 	if err := r.db.WithContext(ctx).
 		Select("id").
@@ -87,14 +89,15 @@ func (r *FavoriteRepository) DeleteFavoriteByProfileID(ctx context.Context, user
 		return err
 	}
 
-	favorite := models.Favorite{
-		UserID:            userID,
-		ProfileID:         request.ProfileID,
-		ContentExternalId: request.ContentExternalID,
-		Type:              request.Type,
-	}
-
-	if err := r.db.WithContext(ctx).Delete(&favorite).Error; err != nil {
+	if err := r.db.WithContext(ctx).
+		Where(
+			"user_id = ? AND profile_id = ? AND content_external_id = ? AND type = ?",
+			userID,
+			request.ProfileID,
+			request.ContentExternalID,
+			request.Type,
+		).
+		Delete(&models.Favorite{}).Error; err != nil {
 		return err
 	}
 

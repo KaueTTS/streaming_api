@@ -137,11 +137,12 @@ func (c *FavoriteController) AddFavorite(ctx *fiber.Ctx) error {
 // @Summary 		Deletar um filme ou série nos favoritos de um perfil
 // @Description		Deleta um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.
 // @Tags 			favorites
+// @Param 			FavoriteRequestDto body dto_favorite.FavoriteRequestDto true "Corpo da requisicao para remover um favorito"
 // @Success 		204
 // @Failure 		400 {object} dto_shared.ErrorDto
 // @Failure 		401 {object} dto_shared.ErrorDto
 // @Failure 		500 {object} dto_shared.ErrorDto
-// @Router 			/v1/favorites/{id} [delete]
+// @Router 			/v1/favorites [delete]
 // @Security 		BearerAuth
 func (c *FavoriteController) RemoveFavorite(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
@@ -168,7 +169,7 @@ func (c *FavoriteController) RemoveFavorite(ctx *fiber.Ctx) error {
 			return responses.NotFound(ctx, shared_errors_profile.ProfileNotFound)
 		}
 
-		return responses.InternalServerError(ctx, shared_errors_favorite.FailedToCreateFavorite)
+		return responses.InternalServerError(ctx, shared_errors_favorite.FailedToDeleteFavorite)
 	}
 
 	return ctx.Status(fiber.StatusNoContent).JSON(nil)

@@ -4,6 +4,7 @@ package shared_errors_favorite
 const (
 	FailedToListFavorites  = "erro ao listar favoritos"
 	FailedToCreateFavorite = "erro ao criar favorito"
+	FailedToDeleteFavorite = "erro ao deletar favorito"
 	InvalidProfileID       = "id do perfil inválido"
 	FavoriteAlreadyExists  = "Conteúdo já adicionado aos favoritos"
 )

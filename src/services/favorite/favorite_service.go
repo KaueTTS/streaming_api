@@ -30,6 +30,7 @@ func NewFavoriteService(
 	}
 }
 
+// ListFavorites lista os favoritos de um perfil com os dados do TMDB.
 func (s *FavoriteService) ListFavorites(ctx context.Context, userID, profileID uint, page, perPage int, language string) (dto_favorite.FavoriteResponseDto, error) {
 	var favorites []models.Favorite
 	var total int64
@@ -76,6 +77,7 @@ func (s *FavoriteService) ListFavorites(ctx context.Context, userID, profileID u
 	}, nil
 }
 
+// AddFavorite adiciona um conteudo aos favoritos de um perfil.
 func (s *FavoriteService) AddFavorite(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error {
 	err := s.FavoriteRepositoryInterface.CreateFavoriteByProfileID(ctx, userID, request)
 	if err != nil {
@@ -93,6 +95,7 @@ func (s *FavoriteService) AddFavorite(ctx context.Context, userID uint, request 
 	return nil
 }
 
+// DeleteFavorite remove um conteudo dos favoritos de um perfil.
 func (s *FavoriteService) DeleteFavorite(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error {
 	err := s.FavoriteRepositoryInterface.DeleteFavoriteByProfileID(ctx, userID, request)
 	if err != nil {
@@ -106,6 +109,7 @@ func (s *FavoriteService) DeleteFavorite(ctx context.Context, userID uint, reque
 	return nil
 }
 
+// mapTMDBFavoriteContent converte o conteudo do TMDB para o dto da API.
 func mapTMDBFavoriteContent(content tmdb_dto.ContentDto, contentType string) dto_content.ContentDto {
 	return dto_content.ContentDto{
 		ExternalID:       content.ID,
@@ -125,6 +129,7 @@ func mapTMDBFavoriteContent(content tmdb_dto.ContentDto, contentType string) dto
 	}
 }
 
+// getGenreIDs extrai os ids dos generos do conteudo.
 func getGenreIDs(content tmdb_dto.ContentDto) []int {
 	if len(content.GenreIDs) > 0 {
 		return content.GenreIDs
@@ -138,6 +143,7 @@ func getGenreIDs(content tmdb_dto.ContentDto) []int {
 	return genreIDs
 }
 
+// firstNonEmpty retorna o primeiro texto nao vazio.
 func firstNonEmpty(values ...string) string {
 	for _, value := range values {
 		if value != "" {

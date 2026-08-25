@@ -419,6 +419,36 @@ paths:
       tags:
       - contents
   /v1/favorites:
+    delete:
+      description: Deleta um filme ou série nos favoritos de um perfil específico
+        sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.
+      parameters:
+      - description: Corpo da requisicao para remover um favorito
+        in: body
+        name: FavoriteRequestDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto_favorite.FavoriteRequestDto'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto_shared.ErrorDto'
+      security:
+      - BearerAuth: []
+      summary: Deletar um filme ou série nos favoritos de um perfil
+      tags:
+      - favorites
     get:
       description: Retorna uma lista paginada de filmes e séries favoritos de um perfil
         específico.
@@ -504,30 +534,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Adicionar um filme ou série nos favoritos de um perfil
-      tags:
-      - favorites
-  /v1/favorites/{id}:
-    delete:
-      description: Deleta um filme ou série nos favoritos de um perfil específico
-        sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto_shared.ErrorDto'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/dto_shared.ErrorDto'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto_shared.ErrorDto'
-      security:
-      - BearerAuth: []
-      summary: Deletar um filme ou série nos favoritos de um perfil
       tags:
       - favorites
   /v1/profiles:

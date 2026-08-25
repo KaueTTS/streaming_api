@@ -181,7 +181,7 @@ A API está organizada sob o prefixo `/v1` e, em sua maior parte, utiliza autent
 | ------ | ---- | --------- |
 | `GET` | `/v1/favorites` | Lista os itens favoritos do usuário |
 | `POST` | `/v1/favorites` | Adiciona um item à lista de favoritos |
-| `DELETE` | `/v1/favorites/:id` | Remove um item favorito pelo identificador |
+| `DELETE` | `/v1/favorites` | Remove um item favorito pelo perfil, conteúdo e tipo |
 
 ## Projeto em funcionamento
 
