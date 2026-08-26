@@ -1,11 +1,11 @@
 <h1 align="center">Streaming API</h1>
 
 <p align="center">
-<img loading="lazy" src="https://img.shields.io/static/v1?label=STATUS&message=EM%20ANDAMENTO&color=blue&style=for-the-badge"/>
+<img loading="lazy" src="http://img.shields.io/static/v1?label=STATUS&message=CONCLUIDO&color=green&style=for-the-badge"/>
 </p>
 
 > [!IMPORTANT]
-> _Esse projeto está em desenvolvimento._
+> _Esse projeto está concluído._
 
 ### Tópicos
 
