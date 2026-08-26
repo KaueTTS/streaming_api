@@ -17,7 +17,7 @@ jobs:
     uses: KaueTTS/ci-templates/.github/workflows/golang.yml@main
     with:
       go_version: '1.26'
-      min_coverage: '20'
+      min_coverage: '50'
       binary_name: 'streaming-api' 
       exclude_packages: '/shared|/mocks|/models|/dto|/container'
       build_path: '.'
