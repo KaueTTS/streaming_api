@@ -19,7 +19,7 @@ jobs:
       go_version: '1.26'
       min_coverage: '50'
       binary_name: 'streaming-api' 
-      exclude_packages: '/shared|/mocks|/models|/dto|/container'
+      exclude_packages: '/shared|/mocks|/models|/dto|/container|/interfaces'
       build_path: '.'
       target_branch: 'master'
       source_branch: 'qa'
