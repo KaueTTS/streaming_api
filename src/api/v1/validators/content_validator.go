@@ -52,6 +52,7 @@ var contentSortByOptions = map[string]map[string]struct{}{
 	},
 }
 
+// ValidateContentListRequest valida os parâmetros da requisição de listagem de conteúdo.
 func ValidateContentListRequest(request dto_content.ContentListRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 
@@ -61,10 +62,12 @@ func ValidateContentListRequest(request dto_content.ContentListRequestDto) []dto
 	details = append(details, validateContentGenres(request.Genre)...)
 	details = append(details, validateContentLanguage(request.Language)...)
 	details = append(details, validateContentYear(request.Year)...)
+	details = append(details, validateContentProfileId(request.ProfileID)...)
 
 	return details
 }
 
+// ValidateContentSearchRequest valida os parâmetros da requisição de busca de conteúdo.
 func ValidateContentSearchRequest(request dto_content.ContentSearchRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 
@@ -76,10 +79,12 @@ func ValidateContentSearchRequest(request dto_content.ContentSearchRequestDto) [
 	details = append(details, validateContentType(request.Type)...)
 	details = append(details, validateContentPage(request.Page)...)
 	details = append(details, validateContentLanguage(request.Language)...)
+	details = append(details, validateContentProfileId(request.ProfileID)...)
 
 	return details
 }
 
+// validateContentType valida o tipo do conteúdo.
 func validateContentType(contentType string) []dto_shared.DetailErrorDto {
 	normalizedType := shared_normalizers.NormalizeString(contentType)
 	if normalizedType == "" {
@@ -99,6 +104,7 @@ func validateContentType(contentType string) []dto_shared.DetailErrorDto {
 	}
 }
 
+// validateContentPage valida a página de conteúdo.
 func validateContentPage(page int) []dto_shared.DetailErrorDto {
 	if page < 0 {
 		return []dto_shared.DetailErrorDto{
@@ -109,6 +115,7 @@ func validateContentPage(page int) []dto_shared.DetailErrorDto {
 	return nil
 }
 
+// validateContentSortBy valida a ordenação de conteúdo.
 func validateContentSortBy(contentType string, sortBy string) []dto_shared.DetailErrorDto {
 	normalizedSortBy := shared_normalizers.NormalizeString(sortBy)
 	if normalizedSortBy == "" {
@@ -129,6 +136,7 @@ func validateContentSortBy(contentType string, sortBy string) []dto_shared.Detai
 	return nil
 }
 
+// validateContentGenres valida os gêneros de conteúdo.
 func validateContentGenres(genre string) []dto_shared.DetailErrorDto {
 	normalizedGenres := strings.TrimSpace(genre)
 	if normalizedGenres == "" {
@@ -144,6 +152,7 @@ func validateContentGenres(genre string) []dto_shared.DetailErrorDto {
 	return nil
 }
 
+// validateContentLanguage valida o idioma do conteúdo.
 func validateContentLanguage(language string) []dto_shared.DetailErrorDto {
 	normalizedLanguage := strings.TrimSpace(language)
 	if normalizedLanguage == "" {
@@ -159,10 +168,22 @@ func validateContentLanguage(language string) []dto_shared.DetailErrorDto {
 	return nil
 }
 
+// validateContentYear valida o ano de lançamento do conteúdo.
 func validateContentYear(year int) []dto_shared.DetailErrorDto {
 	if year < 0 {
 		return []dto_shared.DetailErrorDto{
 			NewDetail(shared_constants.Year, strconv.Itoa(year), shared_errors_content.InvalidContentYear),
+		}
+	}
+
+	return nil
+}
+
+// validateContentProfileId valida o ID do perfil do conteúdo.
+func validateContentProfileId(profileId uint) []dto_shared.DetailErrorDto {
+	if profileId == 0 {
+		return []dto_shared.DetailErrorDto{
+			NewDetail(shared_constants.ProfileID, strconv.Itoa(int(profileId)), shared_errors_content.InvalidContentProfileID),
 		}
 	}
 

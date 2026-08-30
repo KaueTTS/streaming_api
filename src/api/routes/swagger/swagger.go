@@ -7,8 +7,9 @@ import (
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
+// Init inicia as rotas de swagger.
 func Init(app *fiber.App) {
-	if env.AppEnv == "development" {
+	if env.AppEnv != "production" {
 		app.Get("/swagger/*", fiberSwagger.WrapHandler)
 	}
 }

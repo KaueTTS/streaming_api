@@ -6,12 +6,6 @@ services:
       - "8080:8080"
     env_file:
       - .env
-    environment:
-      SQLITE_DATABASE_URL: "/app/data/streaming_api.db"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "jaeger:4318"
-      REDIS_HOST: "redis"
-      REDIS_PORT: "6379"
-      REDIS_DATABASE: "0"
     volumes:
       - ./data:/app/data
     depends_on:

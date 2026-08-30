@@ -8,11 +8,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetAuthenticatedUserID pega o user_id do token e verifica se ele é válido
 func GetAuthenticatedUserID(ctx *fiber.Ctx) (uint, bool) {
 	userID, ok := ctx.Locals("user_id").(uint)
 	return userID, ok && userID > 0
 }
 
+// ParseBody pega o body da requisição e verifica se ele é válido
 func ParseBody[T any](ctx *fiber.Ctx) (T, []dto_shared.DetailErrorDto, bool) {
 	var request T
 
@@ -29,6 +31,7 @@ func ParseBody[T any](ctx *fiber.Ctx) (T, []dto_shared.DetailErrorDto, bool) {
 	return request, nil, true
 }
 
+// ParseQuery pega os parâmetros da query e verifica se eles são válidos
 func ParseQuery[T any](ctx *fiber.Ctx) (T, []dto_shared.DetailErrorDto, bool) {
 	var request T
 
@@ -45,6 +48,7 @@ func ParseQuery[T any](ctx *fiber.Ctx) (T, []dto_shared.DetailErrorDto, bool) {
 	return request, nil, true
 }
 
+// ParseUintParam pega um parâmetro de rota do tipo uint e verifica se ele é válido
 func ParseUintParam(ctx *fiber.Ctx, param string) (uint, string, bool) {
 	value := ctx.Params(param)
 

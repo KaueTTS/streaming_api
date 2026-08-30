@@ -2,8 +2,9 @@ package shared_constants
 
 // Campos comuns
 const (
-	ID        = "id"
-	ProfileId = "profile_id"
+	ID                = "id"
+	ProfileID         = "profile_id"
+	ContentExternalID = "content_external_id"
 )
 
 // Campos de usuário
@@ -18,7 +19,7 @@ const (
 	Type     = "type"
 	Query    = "query"
 	SortBy   = "sort_by"
-	Genre    = "genre"
+	Genre    = "with_genres"
 	Language = "language"
 	Year     = "year"
 )

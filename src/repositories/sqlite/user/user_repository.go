@@ -18,10 +18,12 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
+// Create cria um novo usuário
 func (r *UserRepository) Create(ctx context.Context, user *models.User) error {
 	return r.db.WithContext(ctx).Create(user).Error
 }
 
+// FindByEmail busca um usuário pelo email
 func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
 	normalizedEmail := shared_normalizers.NormalizeString(email)
@@ -33,6 +35,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models
 	return &user, nil
 }
 
+// FindByID busca um usuário pelo ID
 func (r *UserRepository) FindByID(ctx context.Context, id uint) (*models.User, error) {
 	var user models.User
 

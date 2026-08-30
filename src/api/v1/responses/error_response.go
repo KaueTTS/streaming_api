@@ -2,7 +2,6 @@ package responses
 
 import (
 	dto_shared "github.com/KaueTTS/streaming_api/src/api/v1/dto/shared"
-	shared_errors "github.com/KaueTTS/streaming_api/src/shared/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -10,7 +9,7 @@ import (
 func BadRequest(ctx *fiber.Ctx, message string, details []dto_shared.DetailErrorDto) error {
 	return ctx.Status(fiber.StatusBadRequest).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.BadRequest,
+		CodeMessage: dto_shared.BadRequest,
 		Details:     details,
 	})
 }
@@ -19,7 +18,7 @@ func BadRequest(ctx *fiber.Ctx, message string, details []dto_shared.DetailError
 func Unauthorized(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusUnauthorized).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.Unauthorized,
+		CodeMessage: dto_shared.Unauthorized,
 	})
 }
 
@@ -27,7 +26,7 @@ func Unauthorized(ctx *fiber.Ctx, message string) error {
 func Forbidden(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusForbidden).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.Forbidden,
+		CodeMessage: dto_shared.Forbidden,
 	})
 }
 
@@ -35,7 +34,7 @@ func Forbidden(ctx *fiber.Ctx, message string) error {
 func NotFound(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusNotFound).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.NotFound,
+		CodeMessage: dto_shared.NotFound,
 	})
 }
 
@@ -43,7 +42,7 @@ func NotFound(ctx *fiber.Ctx, message string) error {
 func Conflict(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusConflict).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.Conflict,
+		CodeMessage: dto_shared.Conflict,
 	})
 }
 
@@ -51,7 +50,7 @@ func Conflict(ctx *fiber.Ctx, message string) error {
 func TooManyRequests(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusTooManyRequests).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.TooManyRequests,
+		CodeMessage: dto_shared.TooManyRequests,
 	})
 }
 
@@ -59,7 +58,7 @@ func TooManyRequests(ctx *fiber.Ctx, message string) error {
 func InternalServerError(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusInternalServerError).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.InternalServerError,
+		CodeMessage: dto_shared.InternalServerError,
 	})
 }
 
@@ -67,6 +66,6 @@ func InternalServerError(ctx *fiber.Ctx, message string) error {
 func BadGateway(ctx *fiber.Ctx, message string) error {
 	return ctx.Status(fiber.StatusBadGateway).JSON(dto_shared.ErrorDto{
 		Message:     message,
-		CodeMessage: shared_errors.BadGateway,
+		CodeMessage: dto_shared.BadGateway,
 	})
 }

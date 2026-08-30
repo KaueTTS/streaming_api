@@ -16,6 +16,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+// GenerateToken gera um novo token JWT.
 func GenerateToken(userID uint, email, role string) (string, error) {
 	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
@@ -41,6 +42,7 @@ func GenerateToken(userID uint, email, role string) (string, error) {
 	return token.SignedString([]byte(secret))
 }
 
+// ValidateToken valida um token JWT e retorna os claims.
 func ValidateToken(tokenString string) (*Claims, error) {
 	secret := strings.TrimSpace(env.JWTSecret)
 	if secret == "" {
@@ -71,6 +73,7 @@ func ValidateToken(tokenString string) (*Claims, error) {
 	return claims, nil
 }
 
+// ExtractBearerToken extrai o token JWT do header Authorization.
 func ExtractBearerToken(authorizationHeader string) (string, error) {
 	authorizationHeader = strings.TrimSpace(authorizationHeader)
 	if authorizationHeader == "" {
@@ -90,6 +93,8 @@ func ExtractBearerToken(authorizationHeader string) (string, error) {
 	return token, nil
 }
 
+// GetExpirationDuration retorna a duração de expiração do token.
+// Se AuthTokenExpirationTimeInHours não estiver configurado, retorna 8 horas.
 func GetExpirationDuration() time.Duration {
 	if env.AuthTokenExpirationTimeInHours <= 0 {
 		return 8 * time.Hour

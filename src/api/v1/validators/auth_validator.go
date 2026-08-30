@@ -14,6 +14,7 @@ import (
 	shared_errors_auth "github.com/KaueTTS/streaming_api/src/shared/errors/auth"
 )
 
+// ValidateRegisterRequest valida o corpo da requisição de registro
 func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 
@@ -63,6 +64,7 @@ func ValidateRegisterRequest(request dto_auth.RegisterRequestDto) []dto_shared.D
 	return details
 }
 
+// ValidateLoginRequest valida o corpo da requisição de login
 func ValidateLoginRequest(request dto_auth.LoginRequestDto) []dto_shared.DetailErrorDto {
 	var details []dto_shared.DetailErrorDto
 
@@ -78,6 +80,7 @@ func ValidateLoginRequest(request dto_auth.LoginRequestDto) []dto_shared.DetailE
 	return details
 }
 
+// validateEmail valida o formato do e-mail
 func validateEmail(email string) []dto_shared.DetailErrorDto {
 	trimmedEmail := strings.TrimSpace(email)
 	if trimmedEmail == "" {
@@ -92,6 +95,7 @@ func validateEmail(email string) []dto_shared.DetailErrorDto {
 	return nil
 }
 
+// hasLetterAndNumber verifica se a senha possui pelo menos uma letra e um número
 func hasLetterAndNumber(password string) bool {
 	var hasLetter, hasNumber bool
 

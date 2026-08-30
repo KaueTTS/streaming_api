@@ -28,17 +28,17 @@ func NewProfileController(profileService service_interface.ProfileServiceInterfa
 }
 
 // ListProfiles godoc
-// @Summary Listar os perfis do usuário logado
+// @Summary 	Listar os perfis do usuário logado
 // @Description Retorna uma lista paginada dos perfis associados ao usuário autenticado.
-// @Tags profiles
-// @Param page query int false "Número da página" default(1)
-// @Param per_page query int false "Número de itens por página" default(10)
-// @Success 200 {object} dto_profile.ProfileResponseDto
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/profiles [get]
-// @Security BearerAuth
+// @Tags 		profiles
+// @Param 		page query int false "Número da página" default(1)
+// @Param 		per_page query int false "Número de itens por página" default(10)
+// @Success 	200 {object} dto_profile.ProfileResponseDto
+// @Failure 	400 {object} dto_shared.ErrorDto
+// @Failure 	401 {object} dto_shared.ErrorDto
+// @Failure 	500 {object} dto_shared.ErrorDto
+// @Router 		/v1/profiles [get]
+// @Security 	BearerAuth
 func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
@@ -65,6 +65,10 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 		)
 	}
 
+	if details := validator_profile.ValidateProfilePagination(pagination); len(details) > 0 {
+		return responses.BadRequest(ctx, shared_errors.InvalidQueryParameters, details)
+	}
+
 	page, perPage := shared_normalizers.NormalizePagination(pagination)
 
 	response, err := c.profileService.ListProfiles(ctx.UserContext(), userID, page, perPage)
@@ -75,18 +79,18 @@ func (c *ProfileController) ListProfiles(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-// CreateProfile godoc
-// @Summary Criar um novo perfil para o usuário logado
-// @Description Cria um novo perfil associado ao usuário autenticado.
-// @Tags profiles
-// @Param request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
-// @Success 201 {object} dto_profile.ProfileDto
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 409 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/profiles [post]
-// @Security BearerAuth
+// CreateProfile 	godoc
+// @Summary 		Criar um novo perfil para o usuário logado
+// @Description 	Cria um novo perfil associado ao usuário autenticado.
+// @Tags 			profiles
+// @Param 			request body dto_profile.ProfileRequestDto true "Dados para criar um perfil"
+// @Success 		201 {object} dto_profile.ProfileDto
+// @Failure 		400 {object} dto_shared.ErrorDto
+// @Failure 		401 {object} dto_shared.ErrorDto
+// @Failure 		409 {object} dto_shared.ErrorDto
+// @Failure 		500 {object} dto_shared.ErrorDto
+// @Router 			/v1/profiles [post]
+// @Security 		BearerAuth
 func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
@@ -118,19 +122,19 @@ func (c *ProfileController) CreateProfile(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
-// UpdateProfile godoc
-// @Summary Atualizar um perfil já cadastrado para o usuário logado
-// @Description Atualiza os dados de um perfil específico associado ao usuário autenticado.
-// @Tags profiles
-// @Param id path int true "ID do perfil"
-// @Param request body dto_profile.ProfileRequestDto true "Dados para atualizar um perfil"
-// @Success 200 {object} dto_profile.ProfileDto
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 404 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/profiles/{id} [put]
-// @Security BearerAuth
+// UpdateProfile 	godoc
+// @Summary 		Atualizar um perfil já cadastrado para o usuário logado
+// @Description 	Atualiza os dados de um perfil específico associado ao usuário autenticado.
+// @Tags 			profiles
+// @Param 			id path int true "ID do perfil"
+// @Param 			request body dto_profile.ProfileRequestDto true "Dados para atualizar um perfil"
+// @Success 		200 {object} dto_profile.ProfileDto
+// @Failure 		400 {object} dto_shared.ErrorDto
+// @Failure 		401 {object} dto_shared.ErrorDto
+// @Failure 		404 {object} dto_shared.ErrorDto
+// @Failure 		500 {object} dto_shared.ErrorDto
+// @Router 			/v1/profiles/{id} [put]
+// @Security 		BearerAuth
 func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {
@@ -177,18 +181,18 @@ func (c *ProfileController) UpdateProfile(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-// DeleteProfile godoc
-// @Summary Remover um perfil do usuário logado
-// @Description Remove um perfil específico associado ao usuário autenticado.
-// @Tags profiles
-// @Param id path int true "ID do perfil"
-// @Success 204
-// @Failure 400 {object} dto_shared.ErrorDto
-// @Failure 401 {object} dto_shared.ErrorDto
-// @Failure 404 {object} dto_shared.ErrorDto
-// @Failure 500 {object} dto_shared.ErrorDto
-// @Router /v1/profiles/{id} [delete]
-// @Security BearerAuth
+// DeleteProfile 	godoc
+// @Summary 		Remover um perfil do usuário logado
+// @Description 	Remove um perfil específico associado ao usuário autenticado.
+// @Tags 			profiles
+// @Param 			id path int true "ID do perfil"
+// @Success 		204
+// @Failure 		400 {object} dto_shared.ErrorDto
+// @Failure 		401 {object} dto_shared.ErrorDto
+// @Failure 		404 {object} dto_shared.ErrorDto
+// @Failure 		500 {object} dto_shared.ErrorDto
+// @Router 			/v1/profiles/{id} [delete]
+// @Security 		BearerAuth
 func (c *ProfileController) DeleteProfile(ctx *fiber.Ctx) error {
 	userID, ok := controllers_helpers.GetAuthenticatedUserID(ctx)
 	if !ok {

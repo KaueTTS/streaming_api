@@ -7,5 +7,7 @@ import (
 )
 
 type FavoriteServiceInterface interface {
-	ListFavorites(ctx context.Context, userID, profileID uint, page, perPage int) (dto_favorite.FavoriteResponseDto, error)
+	ListFavorites(ctx context.Context, userID, profileID uint, page, perPage int, language string) (dto_favorite.FavoriteResponseDto, error)
+	AddFavorite(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error
+	DeleteFavorite(ctx context.Context, userID uint, request dto_favorite.FavoriteRequestDto) error
 }

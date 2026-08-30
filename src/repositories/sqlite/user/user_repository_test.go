@@ -115,7 +115,9 @@ func TestFindByID(t *testing.T) {
 func setupUserRepositoryTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
 
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
+		TranslateError: true,
+	})
 	require.NoError(t, err)
 	require.NotNil(t, db)
 

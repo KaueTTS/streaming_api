@@ -24,6 +24,7 @@ func NewProfileService(profileRepositoryInterface repository_interface.ProfileRe
 	}
 }
 
+// ListProfiles lista os perfis de um usuario.
 func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page, perPage int) (dto_profile.ProfileResponseDto, error) {
 	var profiles []models.Profile
 	var total int64
@@ -61,6 +62,7 @@ func (s *ProfileService) ListProfiles(ctx context.Context, userID uint, page, pe
 	}, nil
 }
 
+// CreateProfile cria um perfil para um usuario.
 func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error) {
 	total, err := s.ProfileRepositoryInterface.CountByUserID(ctx, userID)
 	if err != nil {
@@ -93,6 +95,7 @@ func (s *ProfileService) CreateProfile(ctx context.Context, userID uint, request
 	}, nil
 }
 
+// UpdateProfile atualiza um perfil de um usuario.
 func (s *ProfileService) UpdateProfile(ctx context.Context, userID, profileID uint, request dto_profile.ProfileRequestDto) (dto_profile.ProfileDto, error) {
 	profile := models.Profile{
 		ID:        profileID,
@@ -121,6 +124,7 @@ func (s *ProfileService) UpdateProfile(ctx context.Context, userID, profileID ui
 	}, nil
 }
 
+// DeleteProfile remove um perfil de um usuario.
 func (s *ProfileService) DeleteProfile(ctx context.Context, userID, profileID uint) error {
 	if err := s.ProfileRepositoryInterface.Delete(ctx, userID, profileID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

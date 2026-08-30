@@ -10,5 +10,5 @@ func Init(app *fiber.App, favoriteController *v1_controller_favorite.FavoriteCon
 	privateGroup := app.Group("/v1", auth_middleware.AuthRequired())
 	privateGroup.Get("/favorites", favoriteController.ListFavorites)
 	privateGroup.Post("/favorites", favoriteController.AddFavorite)
-	privateGroup.Delete("/favorites/:id", favoriteController.RemoveFavorite)
+	privateGroup.Delete("/favorites", favoriteController.RemoveFavorite)
 }

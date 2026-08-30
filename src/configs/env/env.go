@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -25,9 +23,9 @@ var (
 	TMDBAccessToken                string
 )
 
+// Init inicializa as variáveis de ambiente.
+// Se alguma variável obrigatória não for encontrada, retorna um erro.
 func Init() error {
-	_ = godotenv.Load()
-
 	Port = os.Getenv("PORT")
 	if Port == "" {
 		Port = "8080"

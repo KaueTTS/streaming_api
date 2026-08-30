@@ -11,13 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// Init abre uma conexão com o banco de dados SQLite e realiza as migrações.
+// Se o diretório não existir, ele será criado.
 func Init() (*gorm.DB, error) {
 	dir := filepath.Dir(env.SQLiteDatabaseURL)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return nil, fmt.Errorf("erro ao criar diretório do banco de dados: %w", err)
 	}
 
-	db, err := gorm.Open(sqlite.Open(env.SQLiteDatabaseURL), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(env.SQLiteDatabaseURL), &gorm.Config{
+		TranslateError: true,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("erro ao conectar no sqlite: %w", err)
 	}

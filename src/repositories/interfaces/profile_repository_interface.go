@@ -12,4 +12,5 @@ type ProfileRepositoryInterface interface {
 	Create(ctx context.Context, profile *models.Profile) error
 	Update(ctx context.Context, profile *models.Profile) error
 	Delete(ctx context.Context, userID, profileID uint) error
+	FindProfileByUserIDAndID(ctx context.Context, userID, profileID uint) (*models.Profile, error)
 }

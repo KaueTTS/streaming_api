@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// buildAuthController constrói o AuthController com as dependências necessárias
 func buildAuthController(db *gorm.DB) *v1_controller_auth.AuthController {
 	userRepository := repository_sqlite_user.NewUserRepository(db)
 	authService := service_auth.NewAuthService(userRepository)

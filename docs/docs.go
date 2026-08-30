@@ -205,6 +205,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "ID do perfil",
+                        "name": "profile_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "default": 1,
                         "description": "Número da página",
                         "name": "page",
@@ -254,6 +261,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
@@ -284,6 +297,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Tipo do conteúdo",
                         "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID do perfil",
+                        "name": "profile_id",
                         "in": "query",
                         "required": true
                     },
@@ -327,6 +347,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
                     "502": {
                         "description": "Bad Gateway",
                         "schema": {
@@ -355,6 +381,12 @@ const docTemplate = `{
                         "name": "profile_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Idioma da resposta. Exemplo: pt-BR",
+                        "name": "language",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -410,12 +442,25 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Adiciona um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.",
                 "tags": [
                     "favorites"
                 ],
+                "summary": "Adicionar um filme ou série nos favoritos de um perfil",
+                "parameters": [
+                    {
+                        "description": "Corpo da requisição para adicionar um novo favorito",
+                        "name": "FavoriteRequestDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto_favorite.FavoriteRequestDto"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "201": {
+                        "description": "Created"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -425,6 +470,18 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
@@ -436,21 +493,32 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/v1/favorites/{id}": {
+            },
             "delete": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
+                "description": "Deleta um filme ou série nos favoritos de um perfil específico sendo obrigatório passar o id do perfil e do conteúdo e o seu tipo.",
                 "tags": [
                     "favorites"
                 ],
+                "summary": "Deletar um filme ou série nos favoritos de um perfil",
+                "parameters": [
+                    {
+                        "description": "Corpo da requisicao para remover um favorito",
+                        "name": "FavoriteRequestDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto_favorite.FavoriteRequestDto"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -460,6 +528,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto_shared.ErrorDto"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/dto_shared.ErrorDto"
                         }
@@ -768,6 +842,9 @@ const docTemplate = `{
         "dto_content.ContentDto": {
             "type": "object",
             "properties": {
+                "adult": {
+                    "type": "boolean"
+                },
                 "backdrop_path": {
                     "type": "string"
                 },
@@ -829,11 +906,8 @@ const docTemplate = `{
         "dto_favorite.FavoriteDto": {
             "type": "object",
             "properties": {
-                "content_id": {
-                    "type": "integer"
-                },
-                "content_type": {
-                    "type": "string"
+                "content": {
+                    "$ref": "#/definitions/dto_content.ContentDto"
                 },
                 "created_at": {
                     "type": "string"
@@ -845,6 +919,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto_favorite.FavoriteRequestDto": {
+            "type": "object",
+            "properties": {
+                "content_external_id": {
+                    "type": "integer"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "type": {
                     "type": "string"
                 }
             }
