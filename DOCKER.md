@@ -3,6 +3,8 @@
 ### Tópicos
 
 - [Principais comandos do Docker](#principais-comandos-do-docker)
+- [Padrões de configuração do dockerfila](#padrões-de-configuração-do-dockerfile)
+    - [Golang](#-golang)
 
 ## Principais comandos do Docker
 
